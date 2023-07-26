@@ -244,7 +244,7 @@ class KeywordView(viewsets.ModelViewSet):
         ]
         queryset = self.get_queryset().order_by('key_type')
         grouped_data = {}
-        for key_type, group in groupby(queryset, key=lambda obj: dict(key_choices).get(obj.your_field)):
+        for key_type, group in groupby(queryset, key=lambda obj: dict(key_choices).get(obj.key_type)):
             grouped_data[key_type] = [
                 {
                     'description' : obj.description, 
