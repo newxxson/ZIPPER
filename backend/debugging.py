@@ -1,13 +1,13 @@
 import requests
 
 def login():
-    url = 'http://127.0.0.1:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
+    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
 
     # Define custom headers as a dictionary
     # headers = {
     #     'Authorization': 'Bearer YourAccessToken'
     # }
-    data = {'username': 'liam', 'password': '1234'}
+    data = {'username': 'tututu', 'password': 'theworld123'}
 
 
     response = requests.post(url, json=data)
@@ -46,7 +46,7 @@ def area():
 
 
 def houses():
-    url = 'http://127.0.0.1:8000/api/houses/5'  # Replace this with the actual URL of the server endpoint
+    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/houses/'  # Replace this with the actual URL of the server endpoint
     key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
 
     # Define custom headers as a dictionary
@@ -62,10 +62,11 @@ def houses():
         data = response.json()  # If the response contains JSON data, you can access it using the json() method
         print(data)
     else:
+        # print(response.message)
         print(f"Request failed with status code: {response}")
 
 
-# houses()
+houses()
 
 
 def reviews():
@@ -151,4 +152,4 @@ def user_interest():
     else:
         print(f"Request failed with status code: {response}")
 
-user_interest()
+# user_interest()

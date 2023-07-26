@@ -236,9 +236,15 @@ class KeywordView(viewsets.ModelViewSet):
     queryset = Keyword.objects.all().order_by('key_type')
 
     def list(self, request, *args, **kwargs):
+        key_choices = [
+        ('INFRA', '내부'),
+        ('ROOM', '룸컨디션'),
+        ('SAFETY', '치안'),
+        ('TRANSPORT', '교통')
+        ]
         queryset = self.get_queryset().order_by('key_type')
         grouped_data = {}
-        for key_type, group in groupby(queryset, key=lambda obj: obj.key_type):
+        for key_type, group in groupby(queryset, key=lambda obj: dict(key_choices).get(obj.your_field)):
             grouped_data[key_type] = [
                 {
                     'description' : obj.description, 

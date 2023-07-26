@@ -9,13 +9,11 @@ class UserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
         interested_areas = extra_fields.pop('interested_areas', [''])
-        print(interested_areas)
         user = self.model(email=email, id=id, nickname=nickname, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         interested_areas = Area.objects.filter(pk__in = interested_areas)
         user.interested_areas.set(interested_areas)
-        print(user.interested_areas)
         return user
 
     def create_superuser(self, email, id, nickname, password=None,  **extra_fields):

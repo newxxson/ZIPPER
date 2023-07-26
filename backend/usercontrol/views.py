@@ -55,8 +55,6 @@ class UserConfigView(APIView):
         user.delete()
 
 
-
-    
     
 @api_view(['GET'])
 def verify_id(request, id):
@@ -137,7 +135,7 @@ def user_review(request):
 
     review = user.reviews.all()
     serializer = ReviewSerializer(review, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 

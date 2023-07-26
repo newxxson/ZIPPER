@@ -41,12 +41,14 @@ class Review(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='reviews')
     house = models.ForeignKey(House, on_delete=models.CASCADE, related_name="reviews")
 
-    floor_choices = [('UP', 'UPPER'), ('MID','MIDDLE'), ('LOW', "LOWER"), ("UNDER", "UNDERGROUND")]
+    floor_choices = [('UP', '고층'), ('MID','중층'), ('LOW', "저층"), ("UNDER", "반지하")]
     floor_type = models.CharField(max_length=10, choices=floor_choices)
 
     exit_year = models.IntegerField(null=True)
-
-    house_type = models.CharField(max_length=20)
+    
+    house_choices = [('OpenOneRoom', '오픈형 원룸'), ('SepOneRoom', '분리형 원룸'), ('OfficeTel', '오피스텔'), ('Duplex', '복층'), ('TwoRoom', '투룸')]
+    house_type = models.CharField(max_length=20, choices=house_choices, default='OpenOneRoom')
+    rent_choices = [('monthly', '월세'), ('jeon', '전세')]
     rent_type = models.CharField(max_length=10)
 
     deposit = models.IntegerField()
