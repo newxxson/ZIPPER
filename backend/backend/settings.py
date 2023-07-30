@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['.ap-northeast-2.compute.amazonaws.com']
+ALLOWED_HOSTS = ['.ap-northeast-2.compute.amazonaws.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -50,6 +50,20 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_auth',
 ]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'authentication', 
+]
+
+
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',

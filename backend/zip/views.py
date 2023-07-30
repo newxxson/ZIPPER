@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsWriterOrAdmin, IsReadOnlyOrAdmin
 from rest_framework.decorators import api_view, permission_classes
+import json
 # Create your views here.
 
 
@@ -124,78 +125,84 @@ class ReviewView(viewsets.ModelViewSet):
             query_list['monthly__lte'] = int(condition)
 
     def create(self, request, *args, **kwargs):
-        data_dict = request.data
-        address = data_dict.get('address')
+        data_dict = request.data.get('json_data')
+        data_dict = json.loads(data_dict)
+        address = data_dict.pop('address')
 
         house_queryset = House.objects.filter(address = address)
-        if house_queryset.exists():
-            house_instance = house_queryset.first()
+        try:
+            if house_queryset.exists():
+                house_instance = house_queryset.first()
 
-            #house 정보 수정
-            suggest_ratio = house_instance.suggest_ratio
-            review_num = house_instance.review_num
-            if data_dict['suggest'] == 1:
-                print('suggesting')
-                house_instance.suggest_ratio = (review_num * suggest_ratio + 1) / (review_num + 1)
+                if house_instance.reviews.filter(user=request.user).exists():
+                    return Response({'message' : 'the user has already written the Review'}, status=status.HTTP_409_CONFLICT)
+
+                #house 정보 수정
+                suggest_ratio = house_instance.suggest_ratio
+                review_num = house_instance.review_num
+                if data_dict.get('suggest') == 1:
+                    print('suggesting')
+                    house_instance.suggest_ratio = (review_num * suggest_ratio + 1) / (review_num + 1)
+                else:
+                    print('nosuggest')
+                    house_instance.suggest_ratio = (review_num * suggest_ratio) / (review_num + 1)
+                house_instance.review_num += 1
+                house_instance.save()
             else:
-                print('nosuggest')
-                house_instance.suggest_ratio = (review_num * suggest_ratio) / (review_num + 1)
-            house_instance.review_num += 1
-            house_instance.save()
+                if data_dict.get('suggest') == 1:
+                    suggest_ratio = 1
+                else:
+                    suggest_ratio = 0
+                area = Area.objects.get(area_code = data_dict.get('area'))
+                house_instance = House.objects.create(
+                    area = area,
+                    address = address,
+                    lat = data_dict.get('lat'),
+                    lng = data_dict.get('lng'),
+                    name = data_dict.get('name'),
+                    suggest_ratio = suggest_ratio
+                )
+                print('house_created')
+            
 
             #review 형식에 맞게 수정
             data_dict.pop('area')
-            data_dict.pop('address')
             data_dict.pop('lat')
             data_dict.pop('lng')
             data_dict.pop('name')
+        
             key_pk = data_dict.pop('keywords')
             keywords = Keyword.objects.filter(pk__in=key_pk)
-            print(keywords)
-            review_instance = Review.objects.create(
-                user = request.user,
-                house = house_instance,
-                **data_dict
-            )
-            review_instance.keywords.set(keywords)
-            review_instance.save()
-            serializer = self.get_serializer(review_instance)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            if data_dict.get('suggest') == 1:
-                suggest_ratio = 1
-            else:
-                suggest_ratio = 0
-            area = Area.objects.get(area_code = data_dict.get('area'))
-            house_instance = House.objects.create(
-                area = area,
-                address = data_dict.get('address'),
-                lat = data_dict.get('lat'),
-                lng = data_dict.get('lng'),
-                name = data_dict.get('name'),
-                suggest_ratio = suggest_ratio
-            )
-            print('house_created')
-            
-            data_dict.pop('area')
-            data_dict.pop('address')
-            data_dict.pop('lat')
-            data_dict.pop('lng')
-            data_dict.pop('name')
-            key_pk = data_dict.pop('keywords')
-            keywords = Keyword.objects.filter(pk__in=key_pk)
-            
+
+            try:
+                image_data = request.FILES.get('image_data')
+            except Exception as e:
+                print(e)
+                print('????')
+                img_url = 'https://test.com/testtest.png'
+            if image_data:
+                print('there is an image file')
+                img_url = 'https://test.com/testtesttest.png'
 
             review_instance = Review.objects.create(
                 user = request.user,
                 house = house_instance,
+                img_url = img_url,
                 **data_dict
             )
             review_instance.keywords.set(keywords)
             review_instance.save()
             serializer = self.get_serializer(review_instance)
+
+
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
+
+        except Exception as e:
+            return Response({'message' : e}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()

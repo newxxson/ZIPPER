@@ -8,8 +8,8 @@ from django.contrib.auth import get_user_model
 class House(models.Model):
     area = models.ForeignKey("Area", on_delete=models.PROTECT, related_name="houses")
     address = models.TextField(unique=True)
-    lat = models.CharField(max_length=12, default='12.1234')
-    lng = models.CharField(max_length=12, default='10.1234')
+    lat = models.CharField(max_length=20, default='12.1234')
+    lng = models.CharField(max_length=20, default='10.1234')
     name = models.CharField(max_length=100, blank=True, null=True)
     
 
