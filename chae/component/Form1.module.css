@@ -1,0 +1,114 @@
+.formContainer {
+  width: 30vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  padding: 1vw;
+  padding-top: 5vh;
+  justify-content: space-between;
+}
+
+h1 { 
+  font-size:1.5vw;
+  margin-bottom: 0;
+}
+
+h2 {
+  font-size:1vw;
+  margin: 0.1vh;
+
+}
+
+h3 {
+  font-size:1vw;
+  margin: 0vw;
+}
+
+h4{
+  font-size:0.5vw;
+  margin: 0vw;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0.5vh;
+}
+
+label > span {
+  margin-bottom: 0.5vh;
+}
+
+input,
+select {
+  width: 23vw;
+  height: 4vh;
+  border-radius: 0.5vh;
+  border: 0.1vh solid #ccc;
+}
+
+.priceInputContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 23vw;
+}
+
+.priceInput {
+  width: 6.5vw;
+}
+
+
+.buttonWrapper {
+  margin-top: 1.2vh;
+  margin-bottom: 1.2vh;
+  width: 30vw;
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  width: 6.5vw;
+  height: 4vh;
+  background-color: #760023;
+  color: #ffffff;
+  border-radius: 0.5vh;
+  border: none;
+  cursor: pointer;
+  
+}
+
+button:hover {
+  background-color: #5a001b;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+.bottomBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #760023;
+  width: 7.5vw;
+  height: 7vh;
+  color: #ffffff;
+  border-radius: 1vh;
+  
+}
+
+svg{
+  width: 4vw;
+  height: auto;
+}
+
+.bottom{
+  display: grid;
+  align-items: center;
+  width: 30vw;
+}

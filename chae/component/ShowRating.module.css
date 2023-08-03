@@ -1,0 +1,69 @@
+.container {
+  width: 30vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  padding: 1vw;
+  padding-top: 5vh;
+  justify-content: space-between;
+}
+
+.recommendButtons {
+  margin-top: 1.2vh;
+  margin-bottom: 1.2vh;
+  width: 15vw;
+  display: flex;
+  justify-content: space-between;
+}
+
+.recommendButtons button {
+  border: 0.1vw solid black;
+  padding: 0.1vw, 0.1vh;
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+  
+}
+
+.recommendButtons button.selected {
+  background-color: #760023;
+  color: white;
+}
+
+.bottomBox h3 {
+  margin-bottom: 0.1vh;
+  font-size:1vw;
+}
+
+
+.buttonWrapper {
+  margin-top: 1.2vh;
+  margin-bottom: 1.2vh;
+  width: 30vw;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom {
+  display: grid;
+  align-items: center;
+  width: 30vw;
+}
+
+.bottomBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #760023;
+  width: 30vw;
+  height: 7vh;
+  color: #ffffff;
+  border-radius: 1vh;
+}
+

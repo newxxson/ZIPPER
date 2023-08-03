@@ -26,6 +26,8 @@ environ.Env.read_env(
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
+NAVER_ID = env('NAVER_ID')
+NAVER_SECRET = env("NAVER_SECRET")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 

@@ -1,7 +1,7 @@
 import requests
 
 def login():
-    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
+    url = 'http://127.0.0.1:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
 
     # Define custom headers as a dictionary
     # headers = {
@@ -46,7 +46,7 @@ def area():
 
 
 def houses():
-    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/houses/'  # Replace this with the actual URL of the server endpoint
+    url = 'http://127.0.0.1:8000/api/houses/?simple'  # Replace this with the actual URL of the server endpoint
     key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
 
     # Define custom headers as a dictionary
@@ -66,7 +66,7 @@ def houses():
         print(f"Request failed with status code: {response}")
 
 
-houses()
+# houses()
 
 
 def reviews():
@@ -79,7 +79,7 @@ def reviews():
     }
     
 
-    response = requests.delete(url, headers=headers)
+    response = requests.get(url, headers=headers)
 
     # Check if the request was successful (status code 200)
     if response.status_code == 201:
@@ -100,12 +100,10 @@ def create_review_and_house():
     }
     data = {
         'area' : 'Anam-bub',
-        'address' : '서울시 동대문구 제기동 148-26',
-        'lat' : '12.0.0.4',
-        'lng' : '13.0.0.15',
-        'name' : '제발돼라',
+        'address' : '서울시 동대문구 무학로 42길 35-1 (제기동)',
+        'name' : '안암빌라',
         'floor_type' : 'UP',
-        'house_type' : '원룸',
+        'house_type' : 'OneRoom',
         'rent_type' : 'monthly',
         'deposit' : 1000,
         'monthly' : 60,
@@ -113,7 +111,6 @@ def create_review_and_house():
         'keywords' : [34,35,40,45],
         'merits' : '제발제발',
         'demerits' : 'plzplz',
-        'img_url' : 'https://urls.png',
         'rating_inside' : 5,
         'rating_transport' : 5,
         'rating_infra' : 5,
@@ -130,7 +127,7 @@ def create_review_and_house():
     else:
         print(f"Request failed with status code: {response}")
 
-# create_review_and_house()
+create_review_and_house()
 
 
 def user_interest():

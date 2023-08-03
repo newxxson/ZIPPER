@@ -14,6 +14,7 @@ from rest_auth.views import LoginView
 import json
 from .serializers import CustomUserPatchSerializer, CustomLoginSerializer
 
+
 class UserConfigView(APIView):
     def post(self, request):
         User = get_user_model()

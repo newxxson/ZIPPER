@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsWriterOrAdmin, IsReadOnlyOrAdmin
 from rest_framework.decorators import api_view, permission_classes
 import json
+from backend.settings import NAVER_ID, NAVER_SECRET
+from .utils import slice_and_get_coordinates
 # Create your views here.
 
 
@@ -125,10 +127,16 @@ class ReviewView(viewsets.ModelViewSet):
             query_list['monthly__lte'] = int(condition)
 
     def create(self, request, *args, **kwargs):
-        data_dict = request.data.get('json_data')
-        data_dict = json.loads(data_dict)
+        print(request.data)
+        try:
+            data_dict = request.data.get('json_data')
+            data_dict = json.loads(data_dict)
+        except:
+            data_dict = request.data
+            print(type(data_dict))
+        
         address = data_dict.pop('address')
-
+        address, lat, lng = slice_and_get_coordinates(address)
         house_queryset = House.objects.filter(address = address)
         try:
             if house_queryset.exists():
@@ -157,33 +165,29 @@ class ReviewView(viewsets.ModelViewSet):
                 house_instance = House.objects.create(
                     area = area,
                     address = address,
-                    lat = data_dict.get('lat'),
-                    lng = data_dict.get('lng'),
+                    lat = lat,
+                    lng = lng,
                     name = data_dict.get('name'),
                     suggest_ratio = suggest_ratio
                 )
                 print('house_created')
             
-
             #review 형식에 맞게 수정
             data_dict.pop('area')
-            data_dict.pop('lat')
-            data_dict.pop('lng')
             data_dict.pop('name')
         
             key_pk = data_dict.pop('keywords')
             keywords = Keyword.objects.filter(pk__in=key_pk)
 
+            print('herhere')
+            img_url = ''
             try:
                 image_data = request.FILES.get('image_data')
             except Exception as e:
-                print(e)
-                print('????')
                 img_url = 'https://test.com/testtest.png'
             if image_data:
                 print('there is an image file')
                 img_url = 'https://test.com/testtesttest.png'
-
             review_instance = Review.objects.create(
                 user = request.user,
                 house = house_instance,
@@ -235,7 +239,7 @@ class ReviewView(viewsets.ModelViewSet):
         house.review_num -= 1        
         house.save()
         return super().destroy(request, *args, **kwargs)
-        
+    
 
 class KeywordView(viewsets.ModelViewSet):
     permission_classes = [IsReadOnlyOrAdmin]
