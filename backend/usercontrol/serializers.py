@@ -3,7 +3,7 @@ from rest_auth.serializers import LoginSerializer
 from .models import CustomUser
 class CustomLoginSerializer(LoginSerializer):
     class Meta:
-        fields = ('id', 'password')
+        fields = ('username', 'password')
 
 
 class CustomUserPatchSerializer(serializers.ModelSerializer):

@@ -284,6 +284,7 @@ from django.contrib.auth import get_user_model
 def create_real_instances():
     reviews = [
         {
+            "token":'6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -306,6 +307,7 @@ def create_real_instances():
             "area": "Anam-Station"
         },
         {
+            'token':'218a4e697489365e264ba9a84543b38612be536e',
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -326,6 +328,7 @@ def create_real_instances():
             "area": "Anam-Station"
         },
         {
+            'token':'160e9a41213b4e457df2be122e7532019c703a51',
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -348,6 +351,7 @@ def create_real_instances():
             "area": "Anam-Station"
         },
         {
+            'token' : 'b18bb766e5c514430a86a9ec6372f436dafa5957',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -368,6 +372,7 @@ def create_real_instances():
             "area": "Anam-Gaeun"
         },
         {
+            'token' : '6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -389,6 +394,7 @@ def create_real_instances():
         },
 
         {
+            'token':'218a4e697489365e264ba9a84543b38612be536e',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -405,13 +411,13 @@ def create_real_instances():
             "rating_overall": 3,
             "suggest": False,
             "keywords": [
-            "조용한 지역",
             34,35,40,45
             ],
             "address": "서울특별시 동대문구 제기로2길 29",
             "area": "Anam-Front"
         },
         {
+            'token':'160e9a41213b4e457df2be122e7532019c703a51',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -432,6 +438,7 @@ def create_real_instances():
             "area": "Anam-Front"
         },
         {
+            'token':'b18bb766e5c514430a86a9ec6372f436dafa5957',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -454,6 +461,7 @@ def create_real_instances():
             "area": "Anam-Front"
         },
         {
+            'token':'6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -480,6 +488,10 @@ def create_real_instances():
         'Authorization' : f'Token {key}'
     }
     for i, review in enumerate(reviews):
+        key = review.pop('token')
+        headers = {
+            'Authorization' : f'Token {key}'
+        }
         review['name'] = f'안암{i}'
         response = requests.post(url, headers=headers, json=review)
 
@@ -488,13 +500,14 @@ def create_real_instances():
             print(i,data)
         else:
             print(f"Request failed with status code: {response}")
+            print(response.json())
             break
 
 
 create_real_instances()
 
 def create_review_and_house():
-    url = 'http://127.0.0.1:8000/api/reviews/'
+    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/'
     key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
 
     # Define custom headers as a dictionary

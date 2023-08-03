@@ -1,8 +1,8 @@
 import requests
 
 def login():
-    url = 'http://127.0.0.1:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
-
+    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/usercontrol/login/'  # Replace this with the actual URL of the server endpoint
+    # url = 'http://127.0.0.1:8000/usercontrol/login/'
     # Define custom headers as a dictionary
     # headers = {
     #     'Authorization': 'Bearer YourAccessToken'
@@ -20,7 +20,7 @@ def login():
         print(f"Request failed with status code: {response}")
 
 
-# login()
+login()
 
 
 def area():
@@ -128,7 +128,7 @@ def create_review_and_house():
         print(f"Request failed with status code: {response}")
         
 
-create_review_and_house()
+# create_review_and_house()
 
 
 def user_interest():
