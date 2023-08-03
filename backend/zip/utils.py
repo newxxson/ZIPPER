@@ -25,6 +25,6 @@ def slice_and_get_coordinates(address):
     res = requests.get(url, headers=headers)
     result = res.json()
     data = result['addresses'][0]
-
+    print(address, data['x'], data['y'])
     return (address, data['x'], data['y'])
 

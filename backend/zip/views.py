@@ -175,8 +175,9 @@ class ReviewView(viewsets.ModelViewSet):
             #review 형식에 맞게 수정
             data_dict.pop('area')
             data_dict.pop('name')
-        
+            print('???')
             key_pk = data_dict.pop('keywords')
+            print(key_pk)
             keywords = Keyword.objects.filter(pk__in=key_pk)
 
             print('herhere')

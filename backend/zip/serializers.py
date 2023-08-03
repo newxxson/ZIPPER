@@ -16,15 +16,22 @@ class HouseSerializer(serializers.ModelSerializer):
 
 class HouseSerializerSimple(serializers.ModelSerializer):
     img_urls = serializers.SerializerMethodField()  
+    rat_avg = serializers.SerializerMethodField()
     class Meta:
         model = House
-        fields = ['id', 'name', 'lat', 'lng', 'suggest_ratio', 'img_urls']
+        fields = ['id', 'name', 'lat', 'lng', 'suggest_ratio', 'img_urls', 'rat_avg']
 
     def get_img_urls(self, house):
         # Get all img_url values from linked reviews and return as a list
         reviews = house.reviews.all()
         return [review.img_url for review in reviews]
-
+    def get_rat_avg(self, house):
+        reviews = house.reviews.all()
+        total = 0
+        for review in reviews:
+            total += review.rating_overall
+        return total / reviews.count()
+        
     
 
 

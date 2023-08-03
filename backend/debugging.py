@@ -126,6 +126,7 @@ def create_review_and_house():
         print(data)
     else:
         print(f"Request failed with status code: {response}")
+        
 
 create_review_and_house()
 

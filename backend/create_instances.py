@@ -281,13 +281,13 @@ from django.contrib.auth import get_user_model
 # # create_keywords()
 
 
-def create_houses():
+def create_real_instances():
     reviews = [
         {
             "floor_type": "UP",
             "exit_year": 2022,
-            "house_type": "Apartment",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 5000,
             "monthly": 1000,
             "maintenance": 200,
@@ -299,7 +299,7 @@ def create_houses():
             "rating_safety": 4,
             "rating_overall": 4,
             "suggest": False,
-            "keyword": [
+            "keywords": [
             34,35,40,45
             ],
             "address": "서울특별시 성북구 고려대로 89",
@@ -308,8 +308,8 @@ def create_houses():
         {
             "floor_type": "UP",
             "exit_year": 2022,
-            "house_type": "Apartment",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 5000,
             "monthly": 1000,
             "maintenance": 200,
@@ -321,15 +321,15 @@ def create_houses():
             "rating_safety": 4,
             "rating_overall": 4,
             "suggest": True,
-            "keyword": [34,35,40,45],
+            "keywords": [34,35,40,45],
             "address": "서울특별시 성북구 고려대로 89",
             "area": "Anam-Station"
         },
         {
             "floor_type": "UP",
             "exit_year": 2022,
-            "house_type": "Apartment",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 5000,
             "monthly": 1000,
             "maintenance": 200,
@@ -341,7 +341,7 @@ def create_houses():
             "rating_safety": 3,
             "rating_overall": 5,
             "suggest": True,
-            "keyword": [
+            "keywords": [
             34,35,40,45
             ],
             "address": "서울특별시 성북구 고려대로 89",
@@ -350,8 +350,8 @@ def create_houses():
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "House",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 4000,
             "monthly": 1200,
             "maintenance": 100,
@@ -363,15 +363,15 @@ def create_houses():
             "rating_safety": 5,
             "rating_overall": 4,
             "suggest": True,
-            "keyword": [34,35,40,45],
+            "keywords": [34,35,40,45],
             "address": "서울 성북구 개운사길 19",
             "area": "Anam-Gaeun"
         },
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "House",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 3500,
             "monthly": 1100,
             "maintenance": 150,
@@ -383,7 +383,7 @@ def create_houses():
             "rating_safety": 3,
             "rating_overall": 4,
             "suggest": True,
-            "keyword": [34,35,40,45],
+            "keywords": [34,35,40,45],
             "address": "서울 성북구 개운사길 19",
             "area": "Anam-Gaeun"
         },
@@ -391,8 +391,8 @@ def create_houses():
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "House",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 4000,
             "monthly": 1300,
             "maintenance": 100,
@@ -404,7 +404,7 @@ def create_houses():
             "rating_safety": 4,
             "rating_overall": 3,
             "suggest": False,
-            "keyword": [
+            "keywords": [
             "조용한 지역",
             34,35,40,45
             ],
@@ -414,8 +414,8 @@ def create_houses():
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "Studio",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 3000,
             "monthly": 800,
             "maintenance": 50,
@@ -427,15 +427,15 @@ def create_houses():
             "rating_safety": 3,
             "rating_overall": 3,
             "suggest": True,
-            "keyword": [34,35,40,45],
+            "keywords": [34,35,40,45],
             "address": "서울특별시 동대문구 제기로2길 29",
             "area": "Anam-Front"
         },
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "Studio",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 3200,
             "monthly": 850,
             "maintenance": 60,
@@ -447,7 +447,7 @@ def create_houses():
             "rating_safety": 3,
             "rating_overall": 4,
             "suggest": True,
-            "keyword": [
+            "keywords": [
             34,35,40,45
             ],
             "address": "서울특별시 동대문구 제기로2길 29",
@@ -456,8 +456,8 @@ def create_houses():
         {
             "floor_type": "UP",
             "exit_year": 2023,
-            "house_type": "Studio",
-            "rent_type": "Monthly",
+            "house_type": "OneRoom",
+            "rent_type": "monthly",
             "deposit": 2800,
             "monthly": 750,
             "maintenance": 50,
@@ -469,15 +469,29 @@ def create_houses():
             "rating_safety": 4,
             "rating_overall": 3,
             "suggest": False,
-            "keyword": [34,35,40,45],
-            "address": "서울특별시 동대문구 제기로2길 29",
+            "keywords": [34,35,40,45],
+            "address": "서울특별시 동대문구 제기로2길 29", #j
             "area": "Anam-Front"
         }
 ]
-    
-    for review in reviews:
-        url = 'http://127.0.0.1:8000/api/reviews/'
+    url = 'http://127.0.0.1:8000/api/reviews/'
+    key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
+    headers = {
+        'Authorization' : f'Token {key}'
+    }
+    for i, review in enumerate(reviews):
+        review['name'] = f'안암{i}'
+        response = requests.post(url, headers=headers, json=review)
 
+        if response.status_code == 201:
+            data = response.json()
+            print(i,data)
+        else:
+            print(f"Request failed with status code: {response}")
+            break
+
+
+create_real_instances()
 
 def create_review_and_house():
     url = 'http://127.0.0.1:8000/api/reviews/'
