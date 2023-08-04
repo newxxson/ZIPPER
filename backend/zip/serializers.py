@@ -21,7 +21,7 @@ class HouseSerializerSimple(serializers.ModelSerializer):
     rat_avg = serializers.SerializerMethodField()
     class Meta:
         model = House
-        fields = ['id','address', 'name', 'lat', 'lng', 'suggest_ratio', 'img_urls', 'rat_avg', 'area_name']
+        fields = ['id','address', 'name', 'lat', 'lng', 'suggest_ratio', 'img_urls', 'rat_avg', 'area_name', 'is_interested']
 
     def get_img_urls(self, house):
         # Get all img_url values from linked reviews and return as a list
@@ -54,7 +54,6 @@ class AreaSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
-        fields = '__all__'
         exclude = ['user']
 
 class KeywordSerializer(serializers.ModelSerializer):
