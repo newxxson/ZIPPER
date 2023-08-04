@@ -11,11 +11,12 @@ class HouseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = House
-        fields = [field.name for field in House._meta.get_fields()]
+        fields = ['area', 'address', 'lat', 'lng', 'name', 'review_num', 'interest_num', 'suggest_ratio']
         fields.append('area_name')
 
 class HouseSerializerSimple(serializers.ModelSerializer):
     area_name = serializers.CharField(source='area.area_name')
+    is_interested = serializers.SerializerMethodField()
     img_urls = serializers.SerializerMethodField()  
     rat_avg = serializers.SerializerMethodField()
     class Meta:
@@ -32,6 +33,10 @@ class HouseSerializerSimple(serializers.ModelSerializer):
         for review in reviews:
             total += review.rating_overall
         return total // reviews.count()
+    def get_is_interested(self, house):
+        user = self.context['request'].user
+        return house.interested_users.filter(id=user.id).exists()
+    
         
     
 
@@ -50,6 +55,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
+        exclude = ['user']
 
 class KeywordSerializer(serializers.ModelSerializer):
     class Meta:
