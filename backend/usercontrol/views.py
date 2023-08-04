@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from zip.models import Review
 from django.contrib.auth import get_user_model
-from zip.serializers import ReviewSerializer, HouseSerializer, AreaSerializer
+from zip.serializers import ReviewSerializer, HouseSerializer, AreaSerializer, HouseSerializerSimple
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -98,15 +98,15 @@ class UserInterestView(APIView):
     def get(self, request, type):
         user = request.user
         if type == 'area':
-            interested_areas = user.interested_areas.all()
-            serializer = AreaSerializer(interested_areas, many=True)
+            interested_houses = House.objects.filter(area__in=user.interested_areas.all())
+            serializer = HouseSerializerSimple(interested_houses, many=True, context={'request':request})
         elif type == 'house':
             interested_houses = user.interested_houses.all()
-            serializer = HouseSerializer(interested_houses, many=True)
+            serializer = HouseSerializerSimple(interested_houses, many=True, context={'request':request})
         else:
             return Response({'message': 'Invalid query parameter value'}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def delete(self, request, type, pk):
         user = request.user

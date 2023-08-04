@@ -83,6 +83,7 @@ class HouseView(viewsets.ModelViewSet):
             return HouseSerializerSimple
         return self.serializer_class
     
+    
   
 
 class ReviewView(viewsets.ModelViewSet):
