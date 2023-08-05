@@ -1,0 +1,12 @@
+.areaButton {
+  padding: 0.1vw 0.6vw;
+  border: 0.15vw solid #b7b7b7;
+  border-radius: 5px;
+  width: fit-content;
+  font-size: 1.2vw;
+  box-shadow: 1px 1px 1px 0 rgba(0, 0, 0, 0.25);
+
+  font-weight: bold;
+  color: #333;
+  background-color: white;
+}

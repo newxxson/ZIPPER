@@ -1,0 +1,19 @@
+.smallStar {
+  width: 1vw;
+  height: 1vw;
+}
+
+.filled {
+  fill: #feb21e;
+}
+
+.empty {
+  fill: #ffffff;
+}
+
+.starDiv {
+  display: flex; /* 별들을 가로로 정렬 */
+  flex-direction: row;
+  align-items: center;
+  justify-content: center; /* 별들 사이의 간격을 최대로 확보 */
+}

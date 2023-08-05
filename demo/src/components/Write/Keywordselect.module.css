@@ -1,0 +1,81 @@
+.keywordselectContainer {
+  width: 30vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  justify-content: space-between;
+  border: 1px solid black;
+}
+
+.selectedOptionDiv {
+  overflow-y: scroll;
+  height: 30vh;
+}
+
+select {
+  width: 23vw;
+  height: 4vh;
+  border-radius: 0.5vh;
+}
+
+.keywordselectContainer ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.buttonStyle {
+  width: 6.5vw;
+  height: 4vh;
+  background-color: #760023;
+  color: #ffffff;
+  border-radius: 0.5vh;
+  border: none;
+  cursor: pointer;
+  margin: 1vw;
+}
+
+.keywordselectContainer li {
+  cursor: pointer;
+  margin: 0.5vw;
+  border: 1px solid gray;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  font-size: 1vw;
+  padding: 0.5vw;
+}
+
+.keywordselectContainer h2 {
+  margin: 1vh;
+}
+
+.bottomBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #760023;
+  width: 15vw;
+  height: 7vh;
+  color: #ffffff;
+  border-radius: 1vh;
+}
+
+.bottomBox h3 {
+  margin-bottom: 0.1vh;
+  font-size: 1vw;
+}
+
+.buttonWrapper {
+  margin-top: 1.2vh;
+  margin-bottom: 1.2vh;
+  width: 30vw;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottom {
+  display: grid;
+  align-items: center;
+  width: 30vw;
+}

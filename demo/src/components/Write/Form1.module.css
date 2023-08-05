@@ -1,0 +1,163 @@
+.formDiv {
+  width: 30vw;
+  height: 100vh;
+  position: relative;
+
+  overflow-y: scroll;
+  overflow-y: hidden;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  justify-content: space-between;
+}
+
+.formContainerDiv {
+  height: 80vh;
+}
+
+h1 {
+  font-size: 1.5vw;
+}
+
+h2 {
+  font-size: 1vw;
+  margin: 0.1vh;
+}
+
+h3 {
+  font-size: 1vw;
+  margin: 0vw;
+}
+
+h4 {
+  font-size: 0.5vw;
+  margin: 0vw;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+label > span {
+  margin-bottom: 0.5vh;
+}
+
+textarea,
+input,
+select {
+  width: 23vw;
+  height: 4vh;
+  border-radius: 0.5vh;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  padding: 0;
+}
+
+.priceInputContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 23vw;
+}
+
+.priceInput {
+  width: 6.5vw;
+}
+
+.buttonWrapper {
+  margin-top: 1.2vh;
+  margin-bottom: 1.2vh;
+  width: 30vw;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buttonStyle {
+  width: 6.5vw;
+  height: 4vh;
+  background-color: #760023;
+  color: #ffffff;
+  border-radius: 0.5vh;
+  border: none;
+  cursor: pointer;
+  margin: 1vw;
+}
+
+/* button:hover {
+  background-color: #5a001b;
+} */
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.bottomCar {
+  position: absolute;
+  bottom: 7vh;
+}
+
+.bottomBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #760023;
+  width: 7.5vw;
+  height: 7vh;
+  color: #ffffff;
+  border-radius: 1vh;
+  position: absolute;
+  bottom: 0;
+}
+
+.bottom {
+  height: 20vh;
+  width: 30vw;
+}
+
+.addressSearch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  width: 5.3vw;
+  height: 4.5vh;
+  border: 2px solid black;
+}
+
+.SearchWrapper {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 0;
+  padding: 0;
+  left: 18vw;
+}
+
+.SearchInput {
+  position: relative;
+}
+
+.modalBasicClass {
+  position: absolute;
+  top: 15vh;
+  left: 2.9vw;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 1vw;
+  overflow: hidden;
+  width: 24vw;
+  height: 60vh;
+}
+
+option:disabled {
+  color: gray;
+  display: flex;
+  justify-content: center;
+}
