@@ -31,7 +31,7 @@ def slice_and_get_coordinates(address):
 
 def check_query(query, query_params, query_list):
         condition = query_params.get(query)
-        if query == 'rent':
+        if query == 'rent_type':
             if condition == 'jeon':
                 query_list['rent_type'] = condition
             elif condition == 'monthly':

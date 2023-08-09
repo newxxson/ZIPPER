@@ -274,25 +274,21 @@ class KeywordView(viewsets.ModelViewSet):
 @api_view(['GET'])
 def address_area_multi_search(request, search):
     query_params = request.GET.copy()
-    search_type = None
-    if 'area' in query_params:
-        search_areas = search.split('_')
+    if search == 'area':
+        search_areas = query_params.pop('area')
         print(search_areas)
         houses = House.objects.filter(area__area_code__in = search_areas)
         print('area_house', houses.count())
-        if houses.exists():
-            print('area')
-            search_type = 'area'
-            query_params.pop('area')
-        else:
+        if not houses.exists():
             return Response({'message':'no search result'}, status=status.HTTP_404_NOT_FOUND)  
-    elif 'address' in query_params:
-        houses = House.objects.filter(address__contains = search)
-        print('address')
-        if houses.exists():
-            query_params.pop('address')
-        else:
+    elif search == 'address':
+        address = query_params.pop('address')[0]
+        houses = House.objects.filter(address__contains = address)
+        print('address', address)
+        if not houses.exists():
             return Response({'message':'no search result'}, status=status.HTTP_404_NOT_FOUND)
+    else:
+        return Response({'message': 'invalid search type'}, status=status.HTTP_400_BAD_REQUEST)
     
     query_list = dict()
     for query in query_params:
@@ -301,11 +297,12 @@ def address_area_multi_search(request, search):
         print('query existed')
         reviews = Review.objects.filter(**query_list)
         houses = houses.filter(reviews__in = reviews).distinct()
-
+    
     serializer = HouseSerializer(instance=houses, many=True, context={'request':request})
     data = serializer.data
 
-    if search_type == 'area':
+    #이거 그냥 다 주면 좋을 것 같은데
+    if search == 'area':
         data = {area_code: list(house) for area_code, house in groupby(data, key=lambda x: x['area_code'])}
 
     return Response(data, status=status.HTTP_200_OK)
