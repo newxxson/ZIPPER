@@ -32,6 +32,7 @@ urlpatterns = [
     path("api/user-interest/<str:type>/", user_views.UserInterestView.as_view(), name='user-interest-type'),
     path("api/user-interest/<str:type>/<int:pk>/", user_views.UserInterestView.as_view(), name='user-interest-type-pk'),
     path('api/user-review/', user_views.user_review, name='user_review'),
-    
+    path('api/search/<str:search>/', views.address_area_multi_search, name='search'),
+
     # path("zip/", include('zip.urls')),
 ]

@@ -28,3 +28,19 @@ def slice_and_get_coordinates(address):
     print(address, data['y'], data['x'])
     return (address, data['y'], data['x'])
 
+
+def check_query(query, query_params, query_list):
+        condition = query_params.get(query)
+        if query == 'rent':
+            if condition == 'jeon':
+                query_list['rent_type'] = condition
+            elif condition == 'monthly':
+                query_list['rent_type'] = condition
+        elif query == 'dlb':
+            query_list['deposit__gte'] = int(condition)
+        elif query == 'dub':
+            query_list['deposit__lte'] = int(condition)
+        elif query == 'mlb':
+            query_list['monthly__gte'] = int(condition)
+        elif query == 'mub':
+            query_list['monthly__lte'] = int(condition)

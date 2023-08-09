@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import HouseSerializer, HouseSerializerSimple, AreaSerializer, KeywordSerializer, ReviewSerializer
+from .serializers import HouseSerializer, HouseSerializerSimple, AreaSerializer, AreaSerializerSimple, KeywordSerializer, ReviewSerializer
 from rest_framework import viewsets
 from .models import Area, House, Keyword, Review
 from rest_framework.response import Response
@@ -11,7 +11,7 @@ from .permissions import IsWriterOrAdmin, IsReadOnlyOrAdmin
 from rest_framework.decorators import api_view, permission_classes
 import json
 from backend.settings import NAVER_ID, NAVER_SECRET
-from .utils import slice_and_get_coordinates
+from .utils import slice_and_get_coordinates, check_query
 # Create your views here.
 
 
@@ -20,19 +20,20 @@ class AreaView(viewsets.ModelViewSet):
     serializer_class = AreaSerializer
     queryset = Area.objects.all()
     permission_classes = [IsAuthenticated, IsReadOnlyOrAdmin]
+    lookup_field = 'area_code'
     
     def list(self, request, *args, **kwargs):
         query_params = request.query_params
 
         if not query_params:
             return super().list(request, *args, **kwargs)
+        elif query_params.get('simple'):
+            serializer = AreaSerializerSimple(instance=self.queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Invalid query parameter'}, status=status.HTTP_400_BAD_REQUEST)
         
-        areacode = query_params.get('area-code')
-        instance = self.queryset.filter(area_code=areacode)
-        serializer = self.get_serializer(instance, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    
+        
 
 #1. retreive only coordinates and ratio
 #2. retreive all the house instance => pagination not supported yet 
@@ -151,10 +152,10 @@ class ReviewView(viewsets.ModelViewSet):
                 review_num = house_instance.review_num
                 if data_dict.get('suggest') == 1:
                     print('suggesting')
-                    house_instance.suggest_ratio = (review_num * suggest_ratio + 1) / (review_num + 1)
+                    house_instance.suggest_ratio = "%.2f" % ((review_num * suggest_ratio + 1) / (review_num + 1))
                 else:
                     print('nosuggest')
-                    house_instance.suggest_ratio = (review_num * suggest_ratio) / (review_num + 1)
+                    house_instance.suggest_ratio = "%.2f" % ((review_num * suggest_ratio) / (review_num + 1))
                 house_instance.review_num += 1
                 house_instance.save()
             else:
@@ -220,9 +221,9 @@ class ReviewView(viewsets.ModelViewSet):
         #집 suggest_ratio 수정 
         if suggest != None:
             if suggest == 1 and  instance.suggest == 0: 
-                house.suggest_ratio = (house.suggest_ratio * house.review_num + 1) / house.review_num
+                house.suggest_ratio = "%.2f" % ((house.suggest_ratio * house.review_num + 1) / house.review_num)
             elif suggest == 0 and instance.suggest == 1:
-                house.suggest_ratio = (house.suggest_ratio * house.review_num - 1) / house.review_num
+                house.suggest_ratio = "%.2f" % ((house.suggest_ratio * house.review_num - 1) / house.review_num)
             house.save()
         return super().partial_update(request, *args, **kwargs)
     
@@ -234,10 +235,9 @@ class ReviewView(viewsets.ModelViewSet):
             return super().destroy(request, *args, **kwargs)
         
         if instance.suggest:
-            house.suggest_ratio = (house.suggest_ratio * house.review_num - 1) / (house.review_num - 1)
+            house.suggest_ratio = "%.2f" % ((house.suggest_ratio * house.review_num - 1) / (house.review_num - 1))
         else:
-            house.suggest_ratio = (house.suggest_ratio * house.review_num) / (house.review_num - 1)
-        
+            house.suggest_ratio = "%.2f" % ((house.suggest_ratio * house.review_num) / (house.review_num - 1))        
         house.review_num -= 1        
         house.save()
         return super().destroy(request, *args, **kwargs)
@@ -255,7 +255,7 @@ class KeywordView(viewsets.ModelViewSet):
         ('SAFETY', '치안'),
         ('TRANSPORT', '교통')
         ]
-        queryset = self.get_queryset().order_by('key_type')
+        queryset = self.get_queryset()
         grouped_data = {}
         for key_type, group in groupby(queryset, key=lambda obj: dict(key_choices).get(obj.key_type)):
             grouped_data[key_type] = [
@@ -270,3 +270,44 @@ class KeywordView(viewsets.ModelViewSet):
     
 
 
+@permission_classes([IsAuthenticated])
+@api_view(['GET'])
+def address_area_multi_search(request, search):
+    query_params = request.GET.copy()
+    search_type = None
+    if 'area' in query_params:
+        search_areas = search.split('_')
+        print(search_areas)
+        houses = House.objects.filter(area__area_code__in = search_areas)
+        print('area_house', houses.count())
+        if houses.exists():
+            print('area')
+            search_type = 'area'
+            query_params.pop('area')
+        else:
+            return Response({'message':'no search result'}, status=status.HTTP_404_NOT_FOUND)  
+    elif 'address' in query_params:
+        houses = House.objects.filter(address__contains = search)
+        print('address')
+        if houses.exists():
+            query_params.pop('address')
+        else:
+            return Response({'message':'no search result'}, status=status.HTTP_404_NOT_FOUND)
+    
+    query_list = dict()
+    for query in query_params:
+        check_query(query, query_params, query_list)
+    if query_list:
+        print('query existed')
+        reviews = Review.objects.filter(**query_list)
+        houses = houses.filter(reviews__in = reviews).distinct()
+
+    serializer = HouseSerializer(instance=houses, many=True, context={'request':request})
+    data = serializer.data
+
+    if search_type == 'area':
+        data = {area_code: list(house) for area_code, house in groupby(data, key=lambda x: x['area_code'])}
+
+    return Response(data, status=status.HTTP_200_OK)
+
+    
