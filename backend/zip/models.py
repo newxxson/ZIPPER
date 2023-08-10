@@ -85,7 +85,7 @@ class Review(models.Model):
         return super().delete(using, keep_parents)
 
 class Keyword(models.Model):
-    key_choices = [('INFRA', 'Infrastructure'), ('ROOM', 'Room Condition'), ("SAFETY", "Safety"), ('TRANSPORT', 'Transportation method')]
+    key_choices = [('INFRA', 'Infrastructure'), ('ROOM', 'Room Condition'), ("SAFETY", "Safety"), ('TRANSPORT', 'Transportation')]
     key_type = models.CharField(max_length=10, choices=key_choices)
     description = models.CharField(max_length=50) #방이 예뻐용
 
