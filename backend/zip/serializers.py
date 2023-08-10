@@ -42,6 +42,7 @@ class HouseSerializerSimple(serializers.ModelSerializer):
     area_name = serializers.CharField(source="area.area_name")
     img_urls = serializers.SerializerMethodField()
     rat_avg = serializers.SerializerMethodField()
+    is_interested = serializers.SerializerMethodField()
 
     class Meta:
         model = House
@@ -66,6 +67,13 @@ class HouseSerializerSimple(serializers.ModelSerializer):
     def get_is_interested(self, house):
         user = self.context["request"].user
         return house.interested_users.filter(id=user.id).exists()
+
+    def get_rat_avg(self, house):
+        reviews = house.reviews.all()
+        total = 0
+        for review in reviews:
+            total += review.rating_overall
+        return total // reviews.count()
 
 
 class AreaSerializerSimple(serializers.ModelSerializer):
