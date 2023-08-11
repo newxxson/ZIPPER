@@ -1,5 +1,7 @@
-ZIPPER_DEPLOY.pem
+.env
 
-Pipfile
+requirements.txt
 
-Pipfile.lock
+chae.zip
+
+chae
