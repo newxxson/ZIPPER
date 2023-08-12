@@ -121,7 +121,15 @@ class ReviewView(viewsets.ModelViewSet):
             self.check_query(query, query_params, query_list)
         print(query_list)
         result = self.queryset.filter(**query_list)
-        serializer = self.get_serializer(result, many=True)
+        serializer = self.get_serializer(
+            result, many=True, context={"user": request.user}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        id = self.kwargs.get(self.lookup_field)
+        review = Review.objects.get(id=id)
+        serializer = self.get_serializer(review, context={"user": request.user})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 용어를 정리할 필요가 있음
