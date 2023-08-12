@@ -5,7 +5,7 @@ import requests
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
-from zip.models import Area, House, Review
+from zip.models import Area, House, Review, Keyword
 from django.contrib.auth import get_user_model
 
 # def create_area_and_houses_and_reviews():
@@ -259,7 +259,7 @@ from django.contrib.auth import get_user_model
 
 # def create_keywords():
 #     key_choices = [('INFRA', 'Infrastructure'), ('ROOM', 'Room Condition'), ("SAFETY", "Safety"), ('TRANSPORT', 'Transportation method')]
-    
+
 #     # Define four descriptions for each key_type
 #     descriptions = {
 #         'INFRA': ['Good infrastructure', 'Well-maintained facilities', 'Modern amenities', 'High-quality infrastructure'],
@@ -284,7 +284,7 @@ from django.contrib.auth import get_user_model
 def create_real_instances():
     reviews = [
         {
-            "token":'6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
+            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -300,14 +300,12 @@ def create_real_instances():
             "rating_safety": 4,
             "rating_overall": 4,
             "suggest": False,
-            "keywords": [
-            34,35,40,45
-            ],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 성북구 고려대로 89",
-            "area": "Anam-Station"
+            "area": "Anam-Station",
         },
         {
-            'token':'218a4e697489365e264ba9a84543b38612be536e',
+            "token": "218a4e697489365e264ba9a84543b38612be536e",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -323,12 +321,12 @@ def create_real_instances():
             "rating_safety": 4,
             "rating_overall": 4,
             "suggest": True,
-            "keywords": [34,35,40,45],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 성북구 고려대로 89",
-            "area": "Anam-Station"
+            "area": "Anam-Station",
         },
         {
-            'token':'160e9a41213b4e457df2be122e7532019c703a51',
+            "token": "160e9a41213b4e457df2be122e7532019c703a51",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -344,14 +342,12 @@ def create_real_instances():
             "rating_safety": 3,
             "rating_overall": 5,
             "suggest": True,
-            "keywords": [
-            34,35,40,45
-            ],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 성북구 고려대로 89",
-            "area": "Anam-Station"
+            "area": "Anam-Station",
         },
         {
-            'token' : 'b18bb766e5c514430a86a9ec6372f436dafa5957',
+            "token": "b18bb766e5c514430a86a9ec6372f436dafa5957",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -367,12 +363,12 @@ def create_real_instances():
             "rating_safety": 5,
             "rating_overall": 4,
             "suggest": True,
-            "keywords": [34,35,40,45],
+            "keywords": [1, 6, 11, 16],
             "address": "서울 성북구 개운사길 19",
-            "area": "Anam-Gaeun"
+            "area": "Anam-Gaeun",
         },
         {
-            'token' : '6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
+            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -388,13 +384,12 @@ def create_real_instances():
             "rating_safety": 3,
             "rating_overall": 4,
             "suggest": True,
-            "keywords": [34,35,40,45],
+            "keywords": [1, 6, 11, 16],
             "address": "서울 성북구 개운사길 19",
-            "area": "Anam-Gaeun"
+            "area": "Anam-Gaeun",
         },
-
         {
-            'token':'218a4e697489365e264ba9a84543b38612be536e',
+            "token": "218a4e697489365e264ba9a84543b38612be536e",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -410,14 +405,12 @@ def create_real_instances():
             "rating_safety": 4,
             "rating_overall": 3,
             "suggest": False,
-            "keywords": [
-            34,35,40,45
-            ],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 동대문구 제기로2길 29",
-            "area": "Anam-Front"
+            "area": "Anam-Front",
         },
         {
-            'token':'160e9a41213b4e457df2be122e7532019c703a51',
+            "token": "160e9a41213b4e457df2be122e7532019c703a51",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -433,12 +426,12 @@ def create_real_instances():
             "rating_safety": 3,
             "rating_overall": 3,
             "suggest": True,
-            "keywords": [34,35,40,45],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 동대문구 제기로2길 29",
-            "area": "Anam-Front"
+            "area": "Anam-Front",
         },
         {
-            'token':'b18bb766e5c514430a86a9ec6372f436dafa5957',
+            "token": "b18bb766e5c514430a86a9ec6372f436dafa5957",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -454,14 +447,12 @@ def create_real_instances():
             "rating_safety": 3,
             "rating_overall": 4,
             "suggest": True,
-            "keywords": [
-            34,35,40,45
-            ],
+            "keywords": [1, 6, 11, 16],
             "address": "서울특별시 동대문구 제기로2길 29",
-            "area": "Anam-Front"
+            "area": "Anam-Front",
         },
         {
-            'token':'6ccbf57b7dedbdaedbdc66851401bc9cde206ee0',
+            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -477,71 +468,167 @@ def create_real_instances():
             "rating_safety": 4,
             "rating_overall": 3,
             "suggest": False,
-            "keywords": [34,35,40,45],
-            "address": "서울특별시 동대문구 제기로2길 29", #j
-            "area": "Anam-Front"
-        }
-]
-    url = 'http://127.0.0.1:8000/api/reviews/'
-    key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
-    headers = {
-        'Authorization' : f'Token {key}'
-    }
+            "keywords": [1, 6, 11, 16],
+            "address": "서울특별시 동대문구 제기로2길 29",  # j
+            "area": "Anam-Front",
+        },
+    ]
+    url = "http://127.0.0.1:8000/api/reviews/"
+    key = "a9ab0d9ff961ee340d675a187ac5bea9f7f86342"
+    headers = {"Authorization": f"Token {key}"}
     for i, review in enumerate(reviews):
-        key = review.pop('token')
-        headers = {
-            'Authorization' : f'Token {key}'
-        }
-        review['name'] = f'안암{i}'
+        key = review.pop("token")
+        headers = {"Authorization": f"Token {key}"}
+        review["name"] = f"안암{i}"
         response = requests.post(url, headers=headers, json=review)
 
         if response.status_code == 201:
             data = response.json()
-            print(i,data)
+            print(i, data)
         else:
             print(f"Request failed with status code: {response}")
             print(response.json())
             break
 
 
-create_real_instances()
+# create_real_instances()
+
 
 def create_review_and_house():
-    url = 'http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/'
-    key = 'a9ab0d9ff961ee340d675a187ac5bea9f7f86342'
+    url = "http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/"
+    key = "a9ab0d9ff961ee340d675a187ac5bea9f7f86342"
 
     # Define custom headers as a dictionary
-    headers = {
-        'Authorization': f'Token {key}'
-    }
+    headers = {"Authorization": f"Token {key}"}
     data = {
-        'area' : 'Anam-bub',
-        'address' : '서울시 동대문구 제기동 148-26',
-        'lat' : '12.0.0.4',
-        'lng' : '13.0.0.15',
-        'name' : '제발돼라',
-        'floor_type' : 'UP',
-        'house_type' : '원룸',
-        'rent_type' : 'monthly',
-        'deposit' : 1000,
-        'monthly' : 60,
-        'maintenance' : 5,
-        'keywords' : [34,35,40,45],
-        'merits' : '제발제발',
-        'demerits' : 'plzplz',
-        'img_url' : 'https://urls.png',
-        'rating_inside' : 5,
-        'rating_transport' : 5,
-        'rating_infra' : 5,
-        'rating_safety' : 5,
-        'rating_overall' : 5,
-        'suggest' : 0,
+        "area": "Anam-bub",
+        "address": "서울시 동대문구 제기동 148-26",
+        "lat": "12.0.0.4",
+        "lng": "13.0.0.15",
+        "name": "제발돼라",
+        "floor_type": "UP",
+        "house_type": "원룸",
+        "rent_type": "monthly",
+        "deposit": 1000,
+        "monthly": 60,
+        "maintenance": 5,
+        "keywords": [1, 6, 11, 16],
+        "merits": "제발제발",
+        "demerits": "plzplz",
+        "img_url": "https://urls.png",
+        "rating_inside": 5,
+        "rating_transport": 5,
+        "rating_infra": 5,
+        "rating_safety": 5,
+        "rating_overall": 5,
+        "suggest": 0,
     }
-    
+
     response = requests.post(url, headers=headers, json=data)
     # Check if the request was successful (status code 200)
     if response.status_code == 201:
-        data = response.json()  # If the response contains JSON data, you can access it using the json() method
+        data = (
+            response.json()
+        )  # If the response contains JSON data, you can access it using the json() method
         print(data)
     else:
         print(f"Request failed with status code: {response}")
+
+
+# Make sure to import your Keyword model
+
+
+def create_keywords():
+    examples = [
+        {
+            "key_type": "INFRA",
+            "description": "Water Supply",
+            "icon_url": "https://example.com/water-icon.png",
+        },
+        {
+            "key_type": "INFRA",
+            "description": "Electricity",
+            "icon_url": "https://example.com/electricity-icon.png",
+        },
+        {
+            "key_type": "INFRA",
+            "description": "Heating System",
+            "icon_url": "https://example.com/heating-icon.png",
+        },
+        {
+            "key_type": "INFRA",
+            "description": "Ventilation",
+            "icon_url": "https://example.com/ventilation-icon.png",
+        },
+        {
+            "key_type": "ROOM",
+            "description": "Cleanliness",
+            "icon_url": "https://example.com/cleanliness-icon.png",
+        },
+        {
+            "key_type": "ROOM",
+            "description": "Furniture Condition",
+            "icon_url": "https://example.com/furniture-icon.png",
+        },
+        {
+            "key_type": "ROOM",
+            "description": "Space Utilization",
+            "icon_url": "https://example.com/space-icon.png",
+        },
+        {
+            "key_type": "ROOM",
+            "description": "Amenities",
+            "icon_url": "https://example.com/amenities-icon.png",
+        },
+        {
+            "key_type": "SAFETY",
+            "description": "Fire Safety",
+            "icon_url": "https://example.com/fire-safety-icon.png",
+        },
+        {
+            "key_type": "SAFETY",
+            "description": "Security Measures",
+            "icon_url": "https://example.com/security-icon.png",
+        },
+        {
+            "key_type": "SAFETY",
+            "description": "Emergency Exits",
+            "icon_url": "https://example.com/exit-icon.png",
+        },
+        {
+            "key_type": "SAFETY",
+            "description": "CCTV Surveillance",
+            "icon_url": "https://example.com/cctv-icon.png",
+        },
+        {
+            "key_type": "TRANSPORT",
+            "description": "Public Transportation",
+            "icon_url": "https://example.com/public-transport-icon.png",
+        },
+        {
+            "key_type": "TRANSPORT",
+            "description": "Parking Facilities",
+            "icon_url": "https://example.com/parking-icon.png",
+        },
+        {
+            "key_type": "TRANSPORT",
+            "description": "Accessibility",
+            "icon_url": "https://example.com/accessibility-icon.png",
+        },
+        {
+            "key_type": "TRANSPORT",
+            "description": "Vehicle Rental",
+            "icon_url": "https://example.com/rental-icon.png",
+        },
+    ]
+    for example in examples:
+        Keyword.objects.create(
+            key_type=example["key_type"],
+            description=example["description"],
+            icon_url=example["icon_url"],
+        )
+
+
+# Call the function to create the keywords
+create_keywords()
+create_real_instances()
