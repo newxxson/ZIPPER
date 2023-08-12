@@ -284,7 +284,7 @@ from django.contrib.auth import get_user_model
 def create_real_instances():
     reviews = [
         {
-            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
+            "token": "b2841dcd8051a1f94c1e197edb47a4487a926347",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -305,7 +305,7 @@ def create_real_instances():
             "area": "Anam-Station",
         },
         {
-            "token": "218a4e697489365e264ba9a84543b38612be536e",
+            "token": "d249559ee2f5fee28bb977b03b476a51624b1ca7",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -326,7 +326,7 @@ def create_real_instances():
             "area": "Anam-Station",
         },
         {
-            "token": "160e9a41213b4e457df2be122e7532019c703a51",
+            "token": "a9d08944c467bb903c93a1b96ef17ae8584fd19f",
             "floor_type": "UP",
             "exit_year": 2022,
             "house_type": "OneRoom",
@@ -347,7 +347,7 @@ def create_real_instances():
             "area": "Anam-Station",
         },
         {
-            "token": "b18bb766e5c514430a86a9ec6372f436dafa5957",
+            "token": "55a20cf2ef6dbb9a1fc822f477b22ace3d642936",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -368,7 +368,7 @@ def create_real_instances():
             "area": "Anam-Gaeun",
         },
         {
-            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
+            "token": "b2841dcd8051a1f94c1e197edb47a4487a926347",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -389,7 +389,7 @@ def create_real_instances():
             "area": "Anam-Gaeun",
         },
         {
-            "token": "218a4e697489365e264ba9a84543b38612be536e",
+            "token": "d249559ee2f5fee28bb977b03b476a51624b1ca7",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -410,7 +410,7 @@ def create_real_instances():
             "area": "Anam-Front",
         },
         {
-            "token": "160e9a41213b4e457df2be122e7532019c703a51",
+            "token": "a9d08944c467bb903c93a1b96ef17ae8584fd19f",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -431,7 +431,7 @@ def create_real_instances():
             "area": "Anam-Front",
         },
         {
-            "token": "b18bb766e5c514430a86a9ec6372f436dafa5957",
+            "token": "55a20cf2ef6dbb9a1fc822f477b22ace3d642936",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -452,7 +452,7 @@ def create_real_instances():
             "area": "Anam-Front",
         },
         {
-            "token": "6ccbf57b7dedbdaedbdc66851401bc9cde206ee0",
+            "token": "b2841dcd8051a1f94c1e197edb47a4487a926347",
             "floor_type": "UP",
             "exit_year": 2023,
             "house_type": "OneRoom",
@@ -473,13 +473,12 @@ def create_real_instances():
             "area": "Anam-Front",
         },
     ]
-    url = "http://127.0.0.1:8000/api/reviews/"
-    key = "a9ab0d9ff961ee340d675a187ac5bea9f7f86342"
-    headers = {"Authorization": f"Token {key}"}
+    url = "http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/"
+
     for i, review in enumerate(reviews):
         key = review.pop("token")
         headers = {"Authorization": f"Token {key}"}
-        review["name"] = f"안암{i}"
+        review["name"] = f"{review['area']} / 안암{i}"
         response = requests.post(url, headers=headers, json=review)
 
         if response.status_code == 201:
@@ -488,51 +487,52 @@ def create_real_instances():
         else:
             print(f"Request failed with status code: {response}")
             print(response.json())
+            print(i)
             break
 
 
 # create_real_instances()
 
 
-def create_review_and_house():
-    url = "http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/"
-    key = "a9ab0d9ff961ee340d675a187ac5bea9f7f86342"
+# def create_review_and_house():
+#     url = "http://ec2-13-125-213-208.ap-northeast-2.compute.amazonaws.com:8000/api/reviews/"
+#     key = "a9ab0d9ff961ee340d675a187ac5bea9f7f86342"
 
-    # Define custom headers as a dictionary
-    headers = {"Authorization": f"Token {key}"}
-    data = {
-        "area": "Anam-bub",
-        "address": "서울시 동대문구 제기동 148-26",
-        "lat": "12.0.0.4",
-        "lng": "13.0.0.15",
-        "name": "제발돼라",
-        "floor_type": "UP",
-        "house_type": "원룸",
-        "rent_type": "monthly",
-        "deposit": 1000,
-        "monthly": 60,
-        "maintenance": 5,
-        "keywords": [1, 6, 11, 16],
-        "merits": "제발제발",
-        "demerits": "plzplz",
-        "img_url": "https://urls.png",
-        "rating_inside": 5,
-        "rating_transport": 5,
-        "rating_infra": 5,
-        "rating_safety": 5,
-        "rating_overall": 5,
-        "suggest": 0,
-    }
+#     # Define custom headers as a dictionary
+#     headers = {"Authorization": f"Token {key}"}
+#     data = {
+#         "area": "Anam-bub",
+#         "address": "서울시 동대문구 제기동 148-26",
+#         "lat": "12.0.0.4",
+#         "lng": "13.0.0.15",
+#         "name": "제발돼라",
+#         "floor_type": "UP",
+#         "house_type": "원룸",
+#         "rent_type": "monthly",
+#         "deposit": 1000,
+#         "monthly": 60,
+#         "maintenance": 5,
+#         "keywords": [1, 6, 11, 16],
+#         "merits": "제발제발",
+#         "demerits": "plzplz",
+#         "img_url": "https://urls.png",
+#         "rating_inside": 5,
+#         "rating_transport": 5,
+#         "rating_infra": 5,
+#         "rating_safety": 5,
+#         "rating_overall": 5,
+#         "suggest": 0,
+#     }
 
-    response = requests.post(url, headers=headers, json=data)
-    # Check if the request was successful (status code 200)
-    if response.status_code == 201:
-        data = (
-            response.json()
-        )  # If the response contains JSON data, you can access it using the json() method
-        print(data)
-    else:
-        print(f"Request failed with status code: {response}")
+#     response = requests.post(url, headers=headers, json=data)
+#     # Check if the request was successful (status code 200)
+#     if response.status_code == 201:
+#         data = (
+#             response.json()
+#         )  # If the response contains JSON data, you can access it using the json() method
+#         print(data)
+#     else:
+#         print(f"Request failed with status code: {response}")
 
 
 # Make sure to import your Keyword model
@@ -542,82 +542,82 @@ def create_keywords():
     examples = [
         {
             "key_type": "INFRA",
-            "description": "Water Supply",
+            "description": "물 공급 좋음",
             "icon_url": "https://example.com/water-icon.png",
         },
         {
             "key_type": "INFRA",
-            "description": "Electricity",
+            "description": "전기 사용 편함",
             "icon_url": "https://example.com/electricity-icon.png",
         },
         {
             "key_type": "INFRA",
-            "description": "Heating System",
+            "description": "난방 시스템 좋음",
             "icon_url": "https://example.com/heating-icon.png",
         },
         {
             "key_type": "INFRA",
-            "description": "Ventilation",
+            "description": "공기 환기 잘됨",
             "icon_url": "https://example.com/ventilation-icon.png",
         },
         {
             "key_type": "ROOM",
-            "description": "Cleanliness",
+            "description": "방 깨끗함",
             "icon_url": "https://example.com/cleanliness-icon.png",
         },
         {
             "key_type": "ROOM",
-            "description": "Furniture Condition",
+            "description": "가구 상태 좋음",
             "icon_url": "https://example.com/furniture-icon.png",
         },
         {
             "key_type": "ROOM",
-            "description": "Space Utilization",
+            "description": "공간 활용 잘됨",
             "icon_url": "https://example.com/space-icon.png",
         },
         {
             "key_type": "ROOM",
-            "description": "Amenities",
+            "description": "편의 시설 다양함",
             "icon_url": "https://example.com/amenities-icon.png",
         },
         {
             "key_type": "SAFETY",
-            "description": "Fire Safety",
+            "description": "화재 안전 지킴",
             "icon_url": "https://example.com/fire-safety-icon.png",
         },
         {
             "key_type": "SAFETY",
-            "description": "Security Measures",
+            "description": "보안 철저함",
             "icon_url": "https://example.com/security-icon.png",
         },
         {
             "key_type": "SAFETY",
-            "description": "Emergency Exits",
+            "description": "비상 탈출로 있음",
             "icon_url": "https://example.com/exit-icon.png",
         },
         {
             "key_type": "SAFETY",
-            "description": "CCTV Surveillance",
+            "description": "CCTV 관찰 중",
             "icon_url": "https://example.com/cctv-icon.png",
         },
         {
             "key_type": "TRANSPORT",
-            "description": "Public Transportation",
+            "description": "버스정류장 가까움",
             "icon_url": "https://example.com/public-transport-icon.png",
         },
         {
             "key_type": "TRANSPORT",
-            "description": "Parking Facilities",
+            "description": "주차 편리함",
             "icon_url": "https://example.com/parking-icon.png",
         },
         {
             "key_type": "TRANSPORT",
-            "description": "Accessibility",
+            "description": "접근성 좋음",
             "icon_url": "https://example.com/accessibility-icon.png",
         },
         {
             "key_type": "TRANSPORT",
-            "description": "Vehicle Rental",
+            "description": "차량 렌탈 가능",
             "icon_url": "https://example.com/rental-icon.png",
         },
     ]
