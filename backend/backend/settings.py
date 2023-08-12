@@ -69,6 +69,15 @@ CORS_ALLOW_HEADERS = [
 ]
 
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.office365.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env("EMAIL")
+EMAIL_HOST_PASSWORD = env("EMAIL_PWD")
+EMAIL_ENCRYPTION = "STARTTLS"
+
+
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
 ]
@@ -86,13 +95,13 @@ MIDDLEWARE = [
 
 
 # Django All Auth config. Add all of this.
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 SITE_ID = 1
-ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_AUTHENTICATION_METHOD = "id"
@@ -140,6 +149,12 @@ DATABASES = {
         "PASSWORD": DB_PWD,
     }
 }
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "dp.sqlite3",
+#     }
+# }
 
 AUTH_USER_MODEL = "usercontrol.CustomUser"
 

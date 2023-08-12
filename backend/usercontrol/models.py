@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from zip.models import Area, House, Review
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -62,7 +63,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         House, related_name="interested_users", blank=True
     )
 
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -76,3 +77,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self) -> str:
         return self.nickname
+
+
+class EmailActivationToken(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    token = models.CharField(max_length=127, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Token for {self.user.username} - {self.token}"

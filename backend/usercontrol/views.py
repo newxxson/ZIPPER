@@ -10,6 +10,7 @@ from zip.serializers import (
     AreaSerializer,
     HouseSerializerSimple,
 )
+from .models import EmailActivationToken
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -18,6 +19,14 @@ from rest_framework.authtoken.models import Token
 from rest_auth.views import LoginView
 import json
 from .serializers import CustomUserPatchSerializer, CustomLoginSerializer
+from django.contrib.sites.shortcuts import get_current_site
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from .tokens import account_activation_token
+from django.core.mail import EmailMessage
+from django.utils.encoding import force_bytes, force_text
+from .utils import check_user_email, create_email_token
+from django.conf import settings
 
 
 class UserConfigView(APIView):
@@ -30,8 +39,12 @@ class UserConfigView(APIView):
             "department": data.get("major"),
             "interested_areas": data.get("interested_areas"),
         }
-
         try:
+            if not check_user_email(data.get("email")):
+                return Response(
+                    {"message": "invalid email"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
             user = User.objects.create_user(
                 email=data.get("email"),
                 id=data.get("id"),
@@ -40,9 +53,28 @@ class UserConfigView(APIView):
                 **extra_fields
             )
 
-            token = Token.objects.create(user=user)
+            current_site = get_current_site(request)
+            mail_subject = "Activate your blog account."
+
+            activate_token = create_email_token(user)
+
+            message = render_to_string(
+                "acc_active_email.html",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "uid": urlsafe_base64_encode(force_bytes(user.id)),
+                    "token": activate_token.token,
+                },
+            )
+            from_email = settings.EMAIL_HOST_USER
+            to_email = data.get("email")
+            email = EmailMessage(mail_subject, message, from_email, [to_email])
+            email.content_subtype = "html"
+            email.send()
+
             return Response(
-                {"message": "User created", "token": token.key},
+                {"message": "confirmation email was sent to your email account"},
                 status=status.HTTP_201_CREATED,
             )
         except Exception as e:
@@ -63,6 +95,45 @@ class UserConfigView(APIView):
     def delete(self, request):
         user = request.user
         user.delete()
+
+
+@api_view(["GET"])
+def activate_user(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        User = get_user_model()
+        user = User.objects.get(id=uid)
+        if user.is_active:
+            return Response(
+                {"message": "already confirmed"}, status=status.HTTP_400_BAD_REQUEST
+            )
+    except Exception as e:
+        user = None
+        return Response(
+            {"message": str(e)},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    try:
+        activate_token = EmailActivationToken.objects.get(user=user)
+    except:
+        return Response(
+            {"message": "invalid token"}, status=status.HTTP_401_UNAUTHORIZED
+        )
+    if user is not None and token == activate_token.token:
+        user.is_active = True
+        activate_token.delete()
+        user.save()
+        token = Token.objects.create(user=user)
+        # return redirect('home')
+        print(token)
+        return Response(
+            {"message": "confirmation complete", "token": token.key},
+            status=status.HTTP_202_ACCEPTED,
+        )
+    else:
+        return Response(
+            {"message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 @api_view(["GET"])
