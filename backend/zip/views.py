@@ -216,7 +216,10 @@ class ReviewView(viewsets.ModelViewSet):
             )
             review_instance.keywords.set(keywords)
             review_instance.save()
-            serializer = self.get_serializer(review_instance)
+            print("review created")
+            serializer = self.get_serializer(
+                review_instance, context={"user": request.user}
+            )
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
