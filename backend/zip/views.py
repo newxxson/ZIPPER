@@ -208,10 +208,9 @@ class ReviewView(viewsets.ModelViewSet):
             try:
                 image_data = request.FILES.get("image_data")
             except Exception as e:
+                print(e)
                 img_url = "https://test.com/testtest.png"
-            if image_data:
-                print("there is an image file")
-                img_url = "https://test.com/testtesttest.png"
+
             review_instance = Review.objects.create(
                 user=request.user, house=house_instance, img_url=img_url, **data_dict
             )
