@@ -19,6 +19,10 @@ from rest_framework.decorators import api_view, permission_classes
 import json
 from backend.settings import NAVER_ID, NAVER_SECRET
 from .utils import slice_and_get_coordinates, check_query
+from django.core.mail import EmailMessage, get_connection, send_mail
+from django.conf import settings
+from rest_framework.views import APIView
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -200,7 +204,6 @@ class ReviewView(viewsets.ModelViewSet):
             print(key_pk)
             keywords = Keyword.objects.filter(pk__in=key_pk)
 
-            print("herhere")
             img_url = ""
             try:
                 image_data = request.FILES.get("image_data")
@@ -219,7 +222,7 @@ class ReviewView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return Response({"message": e}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -333,3 +336,16 @@ def address_area_multi_search(request, search):
         }
 
     return Response(data, status=status.HTTP_200_OK)
+
+
+class TestEmail(APIView):
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        send_mail(
+            "TEST",
+            "THis is a test",
+            settings.EMAIL_HOST_USER,
+            ["hyukjun1111@gmail.com"],
+            fail_silently=False,
+        )
+        return Response(status=status.HTTP_200_OK)
