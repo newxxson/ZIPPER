@@ -161,7 +161,7 @@ def user_review(request):
     user = request.user
 
     review = user.reviews.all()
-    serializer = ReviewSerializer(review, many=True)
+    serializer = ReviewSerializer(review, many=True, context={"user": request.user})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
