@@ -97,9 +97,9 @@ class AreaSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     selected_keywords = serializers.SerializerMethodField()
     is_user = serializers.SerializerMethodField()
-    area_name = serializers.CharField(source="house.area.area_name")
-    house_name = serializers.CharField(source="house.name")
-    address = serializers.CharField(source="house.address")
+    area_name = serializers.CharField(source="house.area.area_name", read_only=True)
+    house_name = serializers.CharField(source="house.name", read_only=True)
+    address = serializers.CharField(source="house.address", read_only=True)
 
     class Meta:
         model = Review
