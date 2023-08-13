@@ -85,14 +85,14 @@ class HouseView(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         data = self.kwargs.get(self.lookup_field)
         if data.isnumeric():
-            house = self.queryset.get(pk=data)
+            house = self.get_queryset().get(pk=data)
             reviews = house.reviews.all()
             serializer = ReviewSerializer(
                 reviews, many=True, context={"user": request.user}
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            result = self.queryset.filter(address__contains=data)
+            result = self.get_queryset().filter(address__contains=data)
             serializer = self.get_serializer(result, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
