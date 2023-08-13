@@ -248,6 +248,7 @@ class ReviewView(viewsets.ModelViewSet):
             data = request.data
             print(type(data))
             print("???")
+        print(data)
         instance = self.get_object()
         house = instance.house
         suggest = data.get("suggest")
