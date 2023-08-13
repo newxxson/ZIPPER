@@ -258,9 +258,9 @@ class ReviewView(viewsets.ModelViewSet):
                 )
             house.save()
 
-        merged_data = {**ReviewSerializer(instance, context=context).data, **data_dict}
+        print(data_dict)
         serializer = ReviewSerializer(
-            instance, data=merged_data, partial=True, context=context
+            instance, data=data_dict, partial=True, context=context
         )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
