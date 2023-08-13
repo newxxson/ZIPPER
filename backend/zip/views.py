@@ -6,6 +6,7 @@ from .serializers import (
     AreaSerializerSimple,
     KeywordSerializer,
     ReviewSerializer,
+    ReviewUpdateSerializer,
 )
 from rest_framework import viewsets
 from .models import Area, House, Keyword, Review
@@ -239,34 +240,64 @@ class ReviewView(viewsets.ModelViewSet):
             print(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def partial_update(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
+        try:
+            data = request.data.get("json_data")
+            data = json.loads(data)
+        except:
+            data = request.data
+            print(type(data))
+            print("???")
         instance = self.get_object()
         house = instance.house
-        data_dict = request.data
-        context = {"user": request.user}
-        suggest = data_dict.get("suggest", None)
-
-        # 집 suggest_ratio 수정
-        if suggest != None:
-            if suggest == 1 and instance.suggest == 0:
-                house.suggest_ratio = "%.2f" % (
-                    (house.suggest_ratio * house.review_num + 1) / house.review_num
-                )
-            elif suggest == 0 and instance.suggest == 1:
-                house.suggest_ratio = "%.2f" % (
-                    (house.suggest_ratio * house.review_num - 1) / house.review_num
-                )
-            house.save()
-
-        print(data_dict)
-        serializer = ReviewSerializer(
-            instance, data=data_dict, partial=True, context=context
-        )
-        if serializer.is_valid(raise_exception=True):
+        suggest = data.get("suggest")
+        if suggest == 1 and instance.suggest == 0:
+            house.suggest_ratio = "%.2f" % (
+                (house.suggest_ratio * house.review_num + 1) / house.review_num
+            )
+        elif suggest == 0 and instance.suggest == 1:
+            house.suggest_ratio = "%.2f" % (
+                (house.suggest_ratio * house.review_num - 1) / house.review_num
+            )
+        house.save()
+        data.pop("area")
+        data.pop("address")
+        data.pop("name")
+        serializer = ReviewUpdateSerializer(instance, data=data, partial=True)
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def partial_update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     house = instance.house
+    #     data_dict = request.data
+    #     context = {"user": request.user}
+    #     suggest = data_dict.get("suggest", None)
+
+    #     # 집 suggest_ratio 수정
+    #     if suggest != None:
+    #         if suggest == 1 and instance.suggest == 0:
+    #             house.suggest_ratio = "%.2f" % (
+    #                 (house.suggest_ratio * house.review_num + 1) / house.review_num
+    #             )
+    #         elif suggest == 0 and instance.suggest == 1:
+    #             house.suggest_ratio = "%.2f" % (
+    #                 (house.suggest_ratio * house.review_num - 1) / house.review_num
+    #             )
+    #         house.save()
+
+    #     print(data_dict)
+    #     serializer = ReviewSerializer(
+    #         instance, data=data_dict, partial=True, context=context
+    #     )
+    #     if serializer.is_valid(raise_exception=True):
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

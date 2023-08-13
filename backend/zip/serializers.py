@@ -119,6 +119,12 @@ class ReviewSerializer(serializers.ModelSerializer):
             return False
 
 
+class ReviewUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        exclude = ["user", "house"]
+
+
 class KeywordSerializer(serializers.ModelSerializer):
     class Meta:
         model = Keyword
