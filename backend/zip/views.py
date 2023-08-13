@@ -107,6 +107,9 @@ class ReviewView(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated, IsWriterOrAdmin]
 
+    def get_queryset(self):
+        return Review.objects.all()
+
     def list(self, request, *args, **kwargs):
         query_params = request.query_params
         query_set = self.get_queryset()
