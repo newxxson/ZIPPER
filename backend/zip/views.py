@@ -243,8 +243,8 @@ class ReviewView(viewsets.ModelViewSet):
         instance = self.get_object()
         house = instance.house
         data_dict = request.data
-
-        suggest = data_dict.get("suggest")
+        context = {"user": request.user}
+        suggest = data_dict.get("suggest", None)
 
         # 집 suggest_ratio 수정
         if suggest != None:
@@ -257,7 +257,16 @@ class ReviewView(viewsets.ModelViewSet):
                     (house.suggest_ratio * house.review_num - 1) / house.review_num
                 )
             house.save()
-        return super().partial_update(request, *args, **kwargs)
+
+        merged_data = {**ReviewSerializer(instance, context=context).data, **data_dict}
+        serializer = ReviewSerializer(
+            instance, data=merged_data, partial=True, context=context
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
