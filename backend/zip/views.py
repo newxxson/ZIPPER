@@ -56,8 +56,10 @@ class AreaView(viewsets.ModelViewSet):
 class HouseView(viewsets.ModelViewSet):
     serializer_class = HouseSerializer
     lookup_field = "address"
-    queryset = House.objects.all()
     permission_classes = [IsAuthenticated, IsReadOnlyOrAdmin]
+
+    def get_queryset(self):
+        return House.objects.all()
 
     # simple list는 허용됨
     def get_permissions(self):
@@ -67,7 +69,7 @@ class HouseView(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         query_params = request.query_params
-        instance = self.queryset
+        instance = self.get_queryset()
         if not query_params:
             print("no query")
             serializer = self.get_serializer(instance, many=True)
@@ -103,15 +105,14 @@ class HouseView(viewsets.ModelViewSet):
 # deprececated now search is used from multi search view but create is still used
 class ReviewView(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    queryset = Review.objects.all()
     permission_classes = [IsAuthenticated, IsWriterOrAdmin]
 
     def list(self, request, *args, **kwargs):
         query_params = request.query_params
-
+        query_set = self.get_queryset()
         if not query_params:
             serializer = self.get_serializer(
-                self.queryset, many=True, context={"user": request.user}
+                query_set, many=True, context={"user": request.user}
             )
             return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -120,7 +121,7 @@ class ReviewView(viewsets.ModelViewSet):
         for query in query_params:
             self.check_query(query, query_params, query_list)
         print(query_list)
-        result = self.queryset.filter(**query_list)
+        result = query_set.filter(**query_list)
         serializer = self.get_serializer(
             result, many=True, context={"user": request.user}
         )
