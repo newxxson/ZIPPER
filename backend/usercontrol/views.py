@@ -50,7 +50,7 @@ class UserConfigView(APIView):
                 id=data.get("id"),
                 nickname=data.get("nickname"),
                 password=data.get("password"),
-                **extra_fields
+                **extra_fields,
             )
 
             current_site = get_current_site(request)
@@ -163,16 +163,14 @@ class UserInterestView(APIView):
             data = request.data
             if "area_code" in data:
                 area_code = data.get("area_code")
-                print(area_code)
                 area = Area.objects.filter(area_code__in=area_code)
-                if user.interested_areas.exists():
-                    user.interested_areas.add(area)
-                else:
-                    user.interested_areas.set(area)
+                state = f"retrieved area_code with {len(area)}"
+                user.interested_areas.set(area)
                 user.save()
             elif "house_pk" in data:
                 house_pk = data.get("house_pk")
                 house = House.objects.get(pk=house_pk)
+                state = "retrieved house_pk"
                 if user.interested_houses.exists():
                     user.interested_houses.add(house)
                 else:
@@ -191,7 +189,8 @@ class UserInterestView(APIView):
         except Exception as e:
             print(e)
             return Response(
-                {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"message": str(e), "state": state},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
     def get(self, request, type):
