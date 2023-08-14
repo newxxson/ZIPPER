@@ -158,26 +158,41 @@ class UserInterestView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user = request.user
-        data = json.loads(request.body)
-        if "area_code" in data:
-            area_code = data.get("area_code")
-            area = Area.objects.get(area_code=area_code)
-            user.interested_areas.add(area)
-            user.save()
-        elif "house_pk" in data:
-            house_pk = data.get("house_pk")
-            house = House.objects.get(pk=house_pk)
-            user.interested_houses.add(house)
-            house.interest_num += 1
-            house.save()
-            user.save()
-        else:
+        try:
+            user = request.user
+            data = request.data
+            if "area_code" in data:
+                area_code = data.get("area_code")
+                print(area_code)
+                area = Area.objects.filter(area_code__in=area_code)
+                if user.interested_areas.exists():
+                    user.interested_areas.add(area)
+                else:
+                    user.interested_areas.set(area)
+                user.save()
+            elif "house_pk" in data:
+                house_pk = data.get("house_pk")
+                house = House.objects.get(pk=house_pk)
+                if user.interested_houses.exists():
+                    user.interested_houses.add(house)
+                else:
+                    user.interested_houses.set(house)
+                house.interest_num += 1
+                house.save()
+                user.save()
+            else:
+                return Response(
+                    {"message": "Invalid query parameter value"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             return Response(
-                {"message": "Invalid query parameter value"},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"message": "interest saved"}, status=status.HTTP_201_CREATED
             )
-        return Response({"message": "interest saved"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
     def get(self, request, type):
         user = request.user
