@@ -350,7 +350,7 @@ class KeywordView(viewsets.ModelViewSet):
 def address_area_multi_search(request, search):
     query_params = request.GET.copy()
     if search == "area":
-        search_areas = query_params.pop("area")
+        search_areas = query_params.pop("area")[0].split("_")
         print(search_areas)
         houses = House.objects.filter(area__area_code__in=search_areas)
         print("area_house", houses.count())
@@ -359,7 +359,7 @@ def address_area_multi_search(request, search):
                 {"message": "no search result"}, status=status.HTTP_404_NOT_FOUND
             )
     elif search == "address":
-        address = query_params.pop("address")[0]
+        address = query_params.pop("address")
         houses = House.objects.filter(address__contains=address)
         print("address", address)
         if not houses.exists():
