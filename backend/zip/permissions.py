@@ -16,10 +16,5 @@ class IsReadOnlyOrAdmin(BasePermission):
         # Allow read-only methods for all users
         if request.method in SAFE_METHODS:
             return True
-
-        # Allow POST for all authenticated users
-        if request.method == "POST" and request.user.is_authenticated:
-            return True
-
         # Allow other non-safe methods only for admin users
         return request.user and request.user.is_staff

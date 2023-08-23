@@ -6,8 +6,7 @@ from zip.models import Review
 from django.contrib.auth import get_user_model
 from zip.serializers import (
     ReviewSerializer,
-    HouseSerializer,
-    AreaSerializer,
+    AreaSerializerSimple,
     HouseSerializerSimple,
 )
 from .models import EmailActivationToken
@@ -196,6 +195,13 @@ class UserInterestView(APIView):
     def get(self, request, type):
         user = request.user
         if type == "area":
+            # 관심있는 그 지역 자체만 찾기
+            if request.query_params.get("simple", None):
+                interested_areas = user.interested_areas.all()
+                serializer = AreaSerializerSimple(interested_areas, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            # 관심있는 지역의 집들 리턴하기
             interested_houses = House.objects.filter(
                 area__in=user.interested_areas.all()
             )
