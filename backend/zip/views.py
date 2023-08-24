@@ -369,7 +369,7 @@ def address_area_multi_search(request, search):
                 status=status.HTTP_404_NOT_FOUND,
             )
     elif search == "price":
-        pass
+        houses = House.objects.all()
     else:
         return Response(
             {"message": "invalid search type"}, status=status.HTTP_400_BAD_REQUEST
