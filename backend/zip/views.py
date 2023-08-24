@@ -368,6 +368,8 @@ def address_area_multi_search(request, search):
                 {"message": "no search result", "address": address},
                 status=status.HTTP_404_NOT_FOUND,
             )
+    elif search == "price":
+        pass
     else:
         return Response(
             {"message": "invalid search type"}, status=status.HTTP_400_BAD_REQUEST
