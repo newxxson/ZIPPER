@@ -356,15 +356,17 @@ def address_area_multi_search(request, search):
         print("area_house", houses.count())
         if not houses.exists():
             return Response(
-                {"message": "no search result"}, status=status.HTTP_404_NOT_FOUND
+                {"message": "no search result", "area": search_areas},
+                status=status.HTTP_404_NOT_FOUND,
             )
     elif search == "address":
-        address = query_params.pop("address")
+        address = query_params.pop("address")[0]
         houses = House.objects.filter(address__contains=address)
         print("address", address)
         if not houses.exists():
             return Response(
-                {"message": "no search result"}, status=status.HTTP_404_NOT_FOUND
+                {"message": "no search result", "address": address},
+                status=status.HTTP_404_NOT_FOUND,
             )
     else:
         return Response(
