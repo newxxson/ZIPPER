@@ -34,7 +34,13 @@ DB_NAME = env("DB_NAME")
 DB_USER = env("DB_USER")
 DB_PWD = env("DB_PWD")
 
-ALLOWED_HOSTS = [".ap-northeast-2.compute.amazonaws.com", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    ".ap-northeast-2.compute.amazonaws.com",
+    "localhost",
+    "127.0.0.1",
+    "backend.kuzip.kr",
+    "www.backend.kuzip.kr",
+]
 
 
 # Application definition

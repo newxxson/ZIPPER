@@ -348,64 +348,58 @@ class KeywordView(viewsets.ModelViewSet):
 @permission_classes([IsAuthenticated])
 @api_view(["GET"])
 def address_area_multi_search(request, search):
-    query_params = request.GET.copy()
-    if search == "area":
-        search_areas = query_params.pop("area")[0].split("_")
-        print(search_areas)
-        houses = House.objects.filter(area__area_code__in=search_areas)
-        print("area_house", houses.count())
-        if not houses.exists():
+    try:
+        query_params = request.GET.copy()
+        if search == "area":
+            search_areas = query_params.pop("area")[0].split("_")
+            print(search_areas)
+            houses = House.objects.filter(area__area_code__in=search_areas)
+            print("area_house", houses.count())
+            if not houses.exists():
+                return Response(
+                    {"message": "no search result", "area": search_areas},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        elif search == "address":
+            address = query_params.pop("address")[0]
+            houses = House.objects.filter(address__contains=address)
+            print("address", address)
+            if not houses.exists():
+                return Response(
+                    {"message": "no search result", "address": address},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+        elif search == "price":
+            houses = House.objects.all()
+            query_params.pop("address")[0]
+            query_params.pop("area")[0]
+        else:
             return Response(
-                {"message": "no search result", "area": search_areas},
-                status=status.HTTP_404_NOT_FOUND,
+                {"message": "invalid search type"}, status=status.HTTP_400_BAD_REQUEST
             )
-    elif search == "address":
-        address = query_params.pop("address")[0]
-        houses = House.objects.filter(address__contains=address)
-        print("address", address)
-        if not houses.exists():
-            return Response(
-                {"message": "no search result", "address": address},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-    elif search == "price":
-        houses = House.objects.all()
-    else:
+
+        query_list = dict()
+        check_query(query_params, query_list)
+
+        if query_list:
+            print("query existed")
+            reviews = Review.objects.filter(**query_list)
+            houses = houses.filter(reviews__in=reviews).distinct()
+
+        serializer = HouseSerializer(
+            instance=houses, many=True, context={"request": request}
+        )
+        data = serializer.data
+
+        # 이거 그냥 다 주면 좋을 것 같은데
+        if search == "area":
+            data = {
+                area_code: list(house)
+                for area_code, house in groupby(data, key=lambda x: x["area_code"])
+            }
+
+        return Response(data, status=status.HTTP_200_OK)
+    except Exception as e:
         return Response(
-            {"message": "invalid search type"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-    query_list = dict()
-    for query in query_params:
-        check_query(query, query_params, query_list)
-    if query_list:
-        print("query existed")
-        reviews = Review.objects.filter(**query_list)
-        houses = houses.filter(reviews__in=reviews).distinct()
-
-    serializer = HouseSerializer(
-        instance=houses, many=True, context={"request": request}
-    )
-    data = serializer.data
-
-    # 이거 그냥 다 주면 좋을 것 같은데
-    if search == "area":
-        data = {
-            area_code: list(house)
-            for area_code, house in groupby(data, key=lambda x: x["area_code"])
-        }
-
-    return Response(data, status=status.HTTP_200_OK)
-
-
-class TestEmail(APIView):
-    @csrf_exempt
-    def post(self, request, *args, **kwargs):
-        send_mail(
-            "TEST",
-            "THis is a test",
-            settings.EMAIL_HOST_USER,
-            ["hyukjun1111@gmail.com"],
-            fail_silently=False,
-        )
-        return Response(status=status.HTTP_200_OK)
