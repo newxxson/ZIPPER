@@ -21,7 +21,6 @@ import json
 from backend.settings import NAVER_ID, NAVER_SECRET
 from .utils import slice_and_get_coordinates, check_query
 from django.core.mail import EmailMessage, get_connection, send_mail
-from django.conf import settings
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
 
@@ -371,8 +370,6 @@ def address_area_multi_search(request, search):
                 )
         elif search == "price":
             houses = House.objects.all()
-            query_params.pop("address")[0]
-            query_params.pop("area")[0]
         else:
             return Response(
                 {"message": "invalid search type"}, status=status.HTTP_400_BAD_REQUEST
