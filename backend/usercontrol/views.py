@@ -26,7 +26,6 @@ from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes, force_text
 from .utils import (
     check_user_email,
-    create_email_token,
     send_activation_email,
     send_password_reset_email,
 )
