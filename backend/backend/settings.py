@@ -43,6 +43,12 @@ ALLOWED_HOSTS = [
 ]
 
 
+# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
+PASSWORD_RESET_TIMEOUT = 300  # in seconds
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -207,3 +213,34 @@ STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",  # Change to 'DEBUG' if you want to capture debug-level logs
+            "class": "logging.FileHandler",
+            "filename": "django_error.log",
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "ERROR",  # Change to 'DEBUG' if you want to capture debug-level logs
+            "propagate": True,
+        },
+    },
+}
