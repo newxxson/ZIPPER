@@ -9,7 +9,7 @@ from zip.serializers import (
     AreaSerializerSimple,
     HouseSerializerSimple,
 )
-from .models import EmailActivationToken
+from .models import VerificationToken
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -21,10 +21,15 @@ from .serializers import CustomUserPatchSerializer, CustomLoginSerializer
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from .tokens import account_activation_token
+from .tokens import verification_token_generator
 from django.core.mail import EmailMessage
 from django.utils.encoding import force_bytes, force_text
-from .utils import check_user_email, create_email_token
+from .utils import (
+    check_user_email,
+    create_email_token,
+    send_activation_email,
+    send_password_reset_email,
+)
 from django.conf import settings
 
 
@@ -51,31 +56,18 @@ class UserConfigView(APIView):
                 password=data.get("password"),
                 **extra_fields,
             )
+            token = Token.objects.create(user=user)
 
-            current_site = get_current_site(request)
-            mail_subject = "Activate your blog account."
-
-            activate_token = create_email_token(user)
-
-            message = render_to_string(
-                "acc_active_email.html",
-                {
-                    "user": user,
-                    "domain": current_site.domain,
-                    "uid": urlsafe_base64_encode(force_bytes(user.id)),
-                    "token": activate_token.token,
-                },
-            )
-            from_email = settings.EMAIL_HOST_USER
-            to_email = data.get("email")
-            email = EmailMessage(mail_subject, message, from_email, [to_email])
-            email.content_subtype = "html"
-            email.send()
+            send_activation_email(user)
 
             return Response(
-                {"message": "confirmation email was sent to your email account"},
-                status=status.HTTP_201_CREATED,
+                {
+                    "message": "confirmation email was sent to your email account",
+                    "token": token,
+                },
+                status=status.HTTP_200_OK,
             )
+
         except Exception as e:
             return Response({"message": str(e)}, status=400)
 
@@ -97,6 +89,21 @@ class UserConfigView(APIView):
 
 
 @api_view(["GET"])
+def send_activation_email(request):
+    user = request.user
+    if user.is_active:
+        return Response(
+            {"message": "Already activated"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    send_activation_email(user)
+
+    return Response(
+        {"message": "confirmation email was sent to your email account"},
+        status=status.HTTP_200_OK,
+    )
+
+
+@api_view(["GET"])
 def activate_user(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -113,21 +120,97 @@ def activate_user(request, uidb64, token):
             status=status.HTTP_400_BAD_REQUEST,
         )
     try:
-        activate_token = EmailActivationToken.objects.get(user=user)
+        activate_token = VerificationToken.objects.get(user=user)
     except:
         return Response(
-            {"message": "invalid token"}, status=status.HTTP_401_UNAUTHORIZED
+            {"message": "No token was issued"}, status=status.HTTP_401_UNAUTHORIZED
         )
-    if user is not None and token == activate_token.token:
+
+    if (
+        verification_token_generator.check_token(user, token)
+        and activate_token.token == token
+        and activate_token.verification_type == "EMAIL"
+    ):
         user.is_active = True
         activate_token.delete()
         user.save()
-        token = Token.objects.create(user=user)
-        # return redirect('home')
-        print(token)
         return Response(
             {"message": "confirmation complete", "token": token.key},
             status=status.HTTP_202_ACCEPTED,
+        )
+    else:
+        return Response(
+            {
+                "message": "Invalid token. The token may have been expired. Check your email inbox."
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+# 초기화 요청이 들어오고 이메일로 전송
+@api_view(["GET"])
+def password_reset_email(request, id):
+    try:
+        User = get_user_model()
+        user = User.objects.get(id=id)
+        if not user.is_active:
+            return Response(
+                {"message": "activation your account first."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        send_password_reset_email(user)
+
+    except Exception as e:
+        return Response({"message": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(["GET"])
+def verify_reset_password(request, uidb64, token):
+    uid = force_text(urlsafe_base64_decode(uidb64))
+    User = get_user_model()
+    user = User.objects.get(id=uid)
+
+    verification_token = VerificationToken.objects.get(user=user)
+
+    if (
+        verification_token_generator.check_token(user, token)
+        and verification_token.token == token
+        and verification_token.verification_type == "PASSWORD"
+    ):
+        return Response(
+            {
+                "message": "confirmation complete",
+                "verifiaction_token": verification_token.token,
+            },
+            status=status.HTTP_202_ACCEPTED,
+        )
+    else:
+        return Response(
+            {
+                "message": "Invalid token. The token may have been expired. Check your email inbox."
+            },
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+@api_view(["POST"])
+def reset_password(request):
+    data = request.data
+    user = request.user
+
+    password = data.get("password", None)
+    verification_token = data.get("verification_token", None)
+
+    if user.verification_token.token == verification_token:
+        user.set_password(password)
+        user.verification_token.delete()
+        Token.objects.get(user=user).delete()
+        token = Token.objects.create(user=user)
+        user.save()
+        return Response(
+            {"message": "password was reset", "token": token},
+            status=status.HTTP_201_CREATED,
         )
     else:
         return Response(
@@ -173,7 +256,7 @@ class UserInterestView(APIView):
                 if user.interested_houses.exists():
                     user.interested_houses.add(house)
                 else:
-                    user.interested_houses.set(house)
+                    user.interested_houses.set([house])
                 house.interest_num += 1
                 house.save()
                 user.save()
