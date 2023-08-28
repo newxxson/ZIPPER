@@ -9,7 +9,7 @@ from .serializers import (
     ReviewUpdateSerializer,
 )
 from rest_framework import viewsets
-from .models import Area, House, Keyword, Review
+from .models import Area, House, Keyword, Review, ReviewImage
 from rest_framework.response import Response
 from itertools import groupby
 from rest_framework.exceptions import ValidationError
@@ -216,17 +216,15 @@ class ReviewView(viewsets.ModelViewSet):
             print(key_pk)
             keywords = Keyword.objects.filter(pk__in=key_pk)
 
-            img_url = ""
-            try:
-                image_data = request.FILES.get("image_data")
-            except Exception as e:
-                print(e)
-                img_url = "https://test.com/testtest.png"
-
             review_instance = Review.objects.create(
-                user=request.user, house=house_instance, img_url=img_url, **data_dict
+                user=request.user, house=house_instance, **data_dict
             )
             review_instance.keywords.set(keywords)
+
+            image_data = request.FILES.get("image_data", None)
+            if image_data:
+                ReviewImage.objects.create(reveiw=review_instance, image=image_data)
+
             review_instance.save()
             print("review created")
             serializer = self.get_serializer(
@@ -246,7 +244,6 @@ class ReviewView(viewsets.ModelViewSet):
         except:
             data = request.data
             print(type(data))
-            print("???")
         print(data)
         instance = self.get_object()
         house = instance.house
@@ -263,6 +260,16 @@ class ReviewView(viewsets.ModelViewSet):
         data.pop("area")
         data.pop("address")
         data.pop("name")
+
+        image_data = request.FILES.get("image_data", None)
+        if image_data:
+            if instance.image:
+                instance.image.delete()
+            ReviewImage.objects.create(review=instance, image=image_data)
+        else:
+            if instance.image:
+                instance.image.delete()
+
         serializer = ReviewUpdateSerializer(instance, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -316,6 +323,7 @@ class ReviewView(viewsets.ModelViewSet):
             )
         house.review_num -= 1
         house.save()
+
         return super().destroy(request, *args, **kwargs)
 
 

@@ -62,7 +62,7 @@ class HouseSerializerSimple(serializers.ModelSerializer):
     def get_img_urls(self, house):
         # Get all img_url values from linked reviews and return as a list
         reviews = house.reviews.all()
-        return [review.img_url for review in reviews]
+        return [review.image.get_cloudfront_url for review in reviews]
 
     def get_is_interested(self, house):
         user = self.context["request"].user
@@ -100,6 +100,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     area_name = serializers.CharField(source="house.area.area_name", read_only=True)
     house_name = serializers.CharField(source="house.name", read_only=True)
     address = serializers.CharField(source="house.address", read_only=True)
+    image = serializers.CharField(source="image.get_cloudfront_url", read_only=True)
 
     class Meta:
         model = Review

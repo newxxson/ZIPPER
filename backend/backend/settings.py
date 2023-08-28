@@ -34,6 +34,17 @@ DB_NAME = env("DB_NAME")
 DB_USER = env("DB_USER")
 DB_PWD = env("DB_PWD")
 
+
+AWS_ACCESS_KEY_ID = env("zipper_img_admin_key")
+AWS_SECRET_ACCESS_KEY = env("zipper_img_admin_secret_key")
+AWS_STORAGE_BUCKET_NAME = "zipper-img"
+AWS_S3_CUSTOM_DOMAIN = env("cloudfront_url")
+AWS_DEFAULT_ACL = "public-read"
+AWS_QUERYSTRING_AUTH = False
+
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
 ALLOWED_HOSTS = [
     ".ap-northeast-2.compute.amazonaws.com",
     "localhost",
@@ -41,9 +52,6 @@ ALLOWED_HOSTS = [
     "backend.kuzip.kr",
     "www.backend.kuzip.kr",
 ]
-
-
-# DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 
 PASSWORD_RESET_TIMEOUT = 300  # in seconds

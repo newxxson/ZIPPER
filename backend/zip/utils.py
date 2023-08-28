@@ -1,5 +1,7 @@
 from backend.settings import NAVER_ID, NAVER_SECRET
 import requests
+import os
+from datetime import datetime
 
 
 def slice_and_get_coordinates(address):
@@ -46,3 +48,15 @@ def check_query(query_params, query_list):
             query_list["monthly__gte"] = int(condition)
         elif query == "mub":
             query_list["monthly__lte"] = int(condition)
+
+
+def get_upload_to(instance, filename):
+    username = instance.review.user.username
+    house_name = instance.review.house.name
+
+    time = datetime.now().strftime("%Y%m%d%H%M%S")
+
+    extension = filename.split(".")[-1]
+    new_filename = f"{house_name}_{username}_{time}.{extension}"
+
+    return os.path.join("images", house_name, username, new_filename)

@@ -2,6 +2,7 @@ from typing import Any, Dict, Tuple
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from .utils import get_upload_to
 
 
 # Create your models here.
@@ -67,8 +68,6 @@ class Review(models.Model):
     merits = models.TextField()
     demerits = models.TextField()
 
-    img_url = models.URLField(blank=True, null=True)
-
     rating_inside = models.IntegerField()
     rating_transport = models.IntegerField()
     rating_infra = models.IntegerField()
@@ -88,6 +87,9 @@ class Review(models.Model):
         if not has_other_reviews:
             self.house.delete()
 
+        if self.image:
+            self.image.delete()
+
         return super().delete(using, keep_parents)
 
 
@@ -105,3 +107,23 @@ class Keyword(models.Model):
 
     def __str__(self) -> str:
         return self.key_type + " / " + self.description
+
+
+class ReviewImage(models.Model):
+    review = models.ForeignKey(
+        "review",
+        on_delete=models.CASCADE,
+        related_name="image",
+    )
+
+    image = models.ImageField(upload_to=get_upload_to)
+
+    def delete(self, *args, **kwargs):
+        # Delete the file from the storage backend
+        self.image.delete(save=False)
+        # Delete the model instance
+        super(ReviewImage, self).delete(*args, **kwargs)
+
+    def get_cloudfront_url(self):
+        cloudfront_domain = "https://" + settings.AWS_S3_CUSTOM_DOMAIN
+        return f"{cloudfront_domain}/{self.file.name}"
