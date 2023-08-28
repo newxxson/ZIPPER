@@ -90,9 +90,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_PWD")
 EMAIL_ENCRYPTION = "STARTTLS"
 
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
-]
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000", "https://kuzip.kr"]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
