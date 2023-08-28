@@ -224,7 +224,7 @@ LOGGING = {
     },
     "handlers": {
         "file": {
-            "level": "ERROR",
+            "level": "DEBUG",
             "class": "logging.FileHandler",
             "filename": "django_debug.log",
             "formatter": "simple",
@@ -233,7 +233,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "ERROR",
+            "level": "DEBUG",
             "propagate": True,
         },
         "django.request": {
@@ -241,5 +241,11 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
+	'django.db.backends':{
+		'handlers':['file'],
+		'level':'INFO',
+		'propagate':False,
+	}
     },
+
 }
