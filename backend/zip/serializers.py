@@ -64,8 +64,10 @@ class HouseSerializerSimple(serializers.ModelSerializer):
         reviews = house.reviews.all()
         image_urls = []
         for review in reviews:
-            if review.image:
+            try:
                 image_urls.append(review.image.get_cloudfront_url)
+            except:
+                pass
         return image_urls
 
     def get_is_interested(self, house):
@@ -124,9 +126,10 @@ class ReviewSerializer(serializers.ModelSerializer):
             return False
 
     def get_image(self, review):
-        if review.image:
+        try:
             return review.image.get_cloudfront_url
-        return None
+        except:
+            return None
 
 
 class ReviewUpdateSerializer(serializers.ModelSerializer):

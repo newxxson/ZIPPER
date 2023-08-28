@@ -399,8 +399,8 @@ def address_area_multi_search(request, search):
         # 이거 그냥 다 주면 좋을 것 같은데
         if search == "area":
             data = {
-                area_code: list(house)
-                for area_code, house in groupby(data, key=lambda x: x["area_code"])
+                area_name: list(house)
+                for area_name, house in groupby(data, key=lambda x: x["area_name"])
             }
 
         return Response(data, status=status.HTTP_200_OK)

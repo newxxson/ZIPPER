@@ -114,6 +114,8 @@ class ReviewImage(models.Model):
         "review",
         on_delete=models.CASCADE,
         related_name="image",
+        null=True,
+        default=None,
     )
 
     image = models.ImageField(upload_to=get_upload_to)
