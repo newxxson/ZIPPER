@@ -110,7 +110,7 @@ class Keyword(models.Model):
 
 
 class ReviewImage(models.Model):
-    review = models.ForeignKey(
+    review = models.OneToOneField(
         "review",
         on_delete=models.CASCADE,
         related_name="image",
