@@ -241,11 +241,10 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": False,
         },
-	'django.db.backends':{
-		'handlers':['file'],
-		'level':'INFO',
-		'propagate':False,
-	}
+        "django.db.backends": {
+            "handlers": ["file"],
+            "level": "INFO",
+            "propagate": False,
+        },
     },
-
 }
