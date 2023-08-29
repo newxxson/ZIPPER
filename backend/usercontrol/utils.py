@@ -9,6 +9,8 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
+import datetime
 
 
 def create_token(user, veri_type):
@@ -18,6 +20,7 @@ def create_token(user, veri_type):
     if verification_token:
         verification_token.verification_type = veri_type
         verification_token.token = verification_token_generator.make_token(user)
+        verification_token.used += 1
     else:
         token = verification_token.make_token(user)
         verification_token = VerificationToken.objects.create(
@@ -28,23 +31,6 @@ def create_token(user, veri_type):
 
 def check_user_email(email):
     return email.lower().endswith("@korea.ac.kr")
-
-
-def send_activation_email(user):
-    mail_content = dict()
-    mail_content["mail_subject"] = "KUZIP 이용을 위한 메일 인증"
-    mail_content["request"] = "KUZIP 회원가입을 완료하기 위해서 아래 링크를 클릭해주세요!"
-    mail_content["action"] = "고대 이메일 인증하기"
-    send_mail(user, veri_type="EMAIL", mail_content=mail_content)
-
-
-def send_password_reset_email(user):
-    mail_content = dict()
-    mail_content["mail_subject"] = "KUZIP 비밀번호 초기화"
-    mail_content["request"] = "KUZIP 비밀번호를 잃어버리셨나요? 다음 링크를 눌러 초기화를 진행해 주세요"
-    mail_content["description"] = "(만약 비밀번호 초기화 요청을 하지 않으셨다면 바로 ZIPPER팀 메일로 연락 부탁드립니다!)"
-    mail_content["action"] = "비밀번호 초기화"
-    send_mail(user, veri_type="PASSWORD", mail_content=mail_content)
 
 
 def send_mail(user, veri_type, mail_content):
@@ -67,3 +53,33 @@ def send_mail(user, veri_type, mail_content):
     email = EmailMessage(mail_subject, message, from_email, [to_email])
     email.content_subtype = "html"
     email.send()
+
+
+def send_activation_email(user):
+    mail_content = dict()
+    mail_content["mail_subject"] = "KUZIP 이용을 위한 메일 인증"
+    mail_content["request"] = "KUZIP 회원가입을 완료하기 위해서 아래 링크를 클릭해주세요!"
+    mail_content["action"] = "고대 이메일 인증하기"
+    mail_content["request_type"] = "activate"
+    send_mail(user, veri_type="EMAIL", mail_content=mail_content)
+
+
+def send_password_reset_email(user):
+    mail_content = dict()
+    mail_content["mail_subject"] = "KUZIP 비밀번호 초기화"
+    mail_content["request"] = "KUZIP 비밀번호를 잃어버리셨나요? 다음 링크를 눌러 초기화를 진행해 주세요"
+    mail_content["description"] = "(만약 비밀번호 초기화 요청을 하지 않으셨다면 바로 ZIPPER팀 메일로 연락 부탁드립니다!)"
+    mail_content["action"] = "비밀번호 초기화"
+    mail_content["request_type"] = "reset"
+    send_mail(user, veri_type="PASSWORD", mail_content=mail_content)
+
+
+def is_time_interval_ok(user):
+    tokens = VerificationToken.objects.filter(user=user)
+    if tokens.exists():
+        token = tokens.first()
+        if token.used > 2 and timezone.now() - token.last_created < datetime.timedelta(
+            minutes=5
+        ):
+            return False
+    return True

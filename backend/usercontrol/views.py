@@ -28,8 +28,11 @@ from .utils import (
     check_user_email,
     send_activation_email,
     send_password_reset_email,
+    is_time_interval_ok,
 )
 from django.conf import settings
+from django.utils import timezone
+import datetime
 
 
 class UserConfigView(APIView):
@@ -55,6 +58,7 @@ class UserConfigView(APIView):
                 password=data.get("password"),
                 **extra_fields,
             )
+
             token = Token.objects.create(user=user)
 
             send_activation_email(user)
@@ -64,7 +68,7 @@ class UserConfigView(APIView):
                     "message": "confirmation email was sent to your email account",
                     "token": token,
                 },
-                status=status.HTTP_200_OK,
+                status=status.HTTP_201_CREATED,
             )
 
         except Exception as e:
@@ -94,6 +98,12 @@ def send_activation_email(request):
         return Response(
             {"message": "Already activated"}, status=status.HTTP_400_BAD_REQUEST
         )
+    if not is_time_interval_ok(user):
+        return Response(
+            {"message": "you need to wait to send another mail"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     send_activation_email(user)
 
     return Response(
@@ -119,7 +129,7 @@ def activate_user(request, uidb64, token):
             status=status.HTTP_400_BAD_REQUEST,
         )
     try:
-        activate_token = VerificationToken.objects.get(user=user)
+        activation_token = VerificationToken.objects.get(user=user)
     except:
         return Response(
             {"message": "No token was issued"}, status=status.HTTP_401_UNAUTHORIZED
@@ -127,14 +137,15 @@ def activate_user(request, uidb64, token):
 
     if (
         verification_token_generator.check_token(user, token)
-        and activate_token.token == token
-        and activate_token.verification_type == "EMAIL"
+        and activation_token.token == token
+        and activation_token.verification_type == "EMAIL"
     ):
         user.is_active = True
-        activate_token.delete()
+        activation_token.delete()
         user.save()
+        token = Token.objects.get(user=user)
         return Response(
-            {"message": "confirmation complete", "token": token.key},
+            {"message": "confirmation complete", "token": token},
             status=status.HTTP_202_ACCEPTED,
         )
     else:
@@ -147,31 +158,43 @@ def activate_user(request, uidb64, token):
 
 
 # 초기화 요청이 들어오고 이메일로 전송
-@api_view(["GET"])
-def password_reset_email(request, id):
+@api_view(["POST"])
+def password_reset_email(request):
     try:
+        email = request.data.get("email")
         User = get_user_model()
-        user = User.objects.get(id=id)
+        user = User.objects.get(email=email)
         if not user.is_active:
             return Response(
-                {"message": "activation your account first."},
+                {"message": "activate your account first."},
                 status=status.HTTP_401_UNAUTHORIZED,
+            )
+        if not is_time_interval_ok(user):
+            return Response(
+                {"message": "you need to wait to send another mail"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         send_password_reset_email(user)
-
+        return Response(
+            {"message": "reset email has been sent to your email"},
+            status=status.HTTP_200_OK,
+        )
     except Exception as e:
         return Response({"message": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 @api_view(["GET"])
-def verify_reset_password(request, uidb64, token):
+def verify_reset_email(request, uidb64, token):
     uid = force_text(urlsafe_base64_decode(uidb64))
     User = get_user_model()
     user = User.objects.get(id=uid)
-
-    verification_token = VerificationToken.objects.get(user=user)
-
+    try:
+        verification_token = VerificationToken.objects.get(user=user)
+    except Exception as e:
+        return Response(
+            {"message": "invalid token"}, status=status.HTTP_400_BAD_REQUEST
+        )
     if (
         verification_token_generator.check_token(user, token)
         and verification_token.token == token
@@ -180,7 +203,7 @@ def verify_reset_password(request, uidb64, token):
         return Response(
             {
                 "message": "confirmation complete",
-                "verifiaction_token": verification_token.token,
+                "verification_token": verification_token.token,
             },
             status=status.HTTP_202_ACCEPTED,
         )
@@ -196,25 +219,28 @@ def verify_reset_password(request, uidb64, token):
 @api_view(["POST"])
 def reset_password(request):
     data = request.data
-    user = request.user
-
-    password = data.get("password", None)
     verification_token = data.get("verification_token", None)
 
-    if user.verification_token.token == verification_token:
-        user.set_password(password)
-        user.verification_token.delete()
-        Token.objects.get(user=user).delete()
-        token = Token.objects.create(user=user)
-        user.save()
-        return Response(
-            {"message": "password was reset", "token": token},
-            status=status.HTTP_201_CREATED,
-        )
+    User = get_user_model()
+    user = User.objects.filter(verification_token__token=verification_token)
+    if user.exists():
+        user = user.first()
     else:
         return Response(
             {"message": "Invalid token"}, status=status.HTTP_401_UNAUTHORIZED
         )
+
+    password = data.get("password")
+
+    user.set_password(password)
+    user.verification_token.delete()
+    Token.objects.get(user=user).delete()
+    token = Token.objects.create(user=user)
+    user.save()
+    return Response(
+        {"message": "password was reset", "token": token},
+        status=status.HTTP_201_CREATED,
+    )
 
 
 @api_view(["GET"])

@@ -262,13 +262,16 @@ class ReviewView(viewsets.ModelViewSet):
         data.pop("name")
 
         image_data = request.FILES.get("image_data", None)
-        if image_data:
-            if instance.image:
-                instance.image.delete()
-            ReviewImage.objects.create(review=instance, image=image_data)
-        else:
-            if instance.image:
-                instance.image.delete()
+        try:
+            image = instance.image
+            if image_data:
+                image.delete()
+                ReviewImage.objects.create(review=instance, image=image_data)
+            else:
+                image.delete()
+        except:
+            if image_data:
+                ReviewImage.objects.create(review=instance, image=image_data)
 
         serializer = ReviewUpdateSerializer(instance, data=data, partial=True)
         if serializer.is_valid():

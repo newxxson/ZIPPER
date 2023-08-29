@@ -85,6 +85,8 @@ class VerificationToken(models.Model):
         on_delete=models.CASCADE,
         related_name="verification_token",
     )
+    last_created = models.DateTimeField(auto_now=True)
+    used = models.IntegerField(default=1)
     type_options = [("EMAIL", "EMAIL"), ("PASSWORD", "PASSWORD")]
     veryfication_type = models.CharField(max_length=10)
     token = models.CharField(max_length=127, unique=True)

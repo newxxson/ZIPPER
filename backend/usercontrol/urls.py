@@ -6,6 +6,10 @@ from .views import (
     verify_id,
     verify_nickname,
     activate_user,
+    send_activation_email,
+    password_reset_email,
+    verify_reset_email,
+    reset_password,
 )
 
 
@@ -16,4 +20,12 @@ urlpatterns = [
     path("verify-id/<str:id>/", verify_id, name="verify_id"),
     path("verify-nickname/<str:nickname>/", verify_nickname, name="verify_nickname"),
     path("activate/<str:uidb64>/<str:token>/", activate_user, name="activate"),
+    path("send-activation-email/", send_activation_email, name="send_activation_email"),
+    path("send-reset-email", password_reset_email, name="send_reset_email"),
+    path(
+        "verify-reset-email/<str:uidb64>/<str:token>",
+        verify_reset_email,
+        name="verify_reset_email",
+    ),
+    path("reset-password", reset_password, name="reset_password"),
 ]
