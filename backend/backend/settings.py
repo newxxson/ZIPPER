@@ -43,6 +43,7 @@ AWS_DEFAULT_ACL = "public-read"
 AWS_QUERYSTRING_AUTH = False
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 
 ALLOWED_HOSTS = [
@@ -213,7 +214,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "https://d3t1q8jpgw2itd.cloudfront.net"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -60,7 +60,7 @@ class Review(models.Model):
     rent_type = models.CharField(max_length=10)
 
     deposit = models.IntegerField()
-    monthly = models.IntegerField(null=True)
+    monthly = models.IntegerField(null=True, default=None)
     maintenance = models.IntegerField()
 
     keywords = models.ManyToManyField("Keyword", related_name="reviews", blank=True)
