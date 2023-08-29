@@ -43,7 +43,14 @@ AWS_DEFAULT_ACL = "public-read"
 AWS_QUERYSTRING_AUTH = False
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+from storages.backends.s3boto3 import S3Boto3Storage
+
+
+class StaticStorage(S3Boto3Storage):
+    location = "static_subfolder/"
+
+
+STATICFILES_STORAGE = "backend.storage_backends.StaticStorage"
 
 
 ALLOWED_HOSTS = [
