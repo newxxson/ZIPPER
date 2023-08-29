@@ -60,7 +60,7 @@ class Review(models.Model):
     rent_type = models.CharField(max_length=10)
 
     deposit = models.IntegerField()
-    monthly = models.IntegerField(null=True, default=None)
+    monthly = models.IntegerField(null=True, default="")
     maintenance = models.IntegerField()
 
     keywords = models.ManyToManyField("Keyword", related_name="reviews", blank=True)
@@ -93,22 +93,6 @@ class Review(models.Model):
         return super().delete(using, keep_parents)
 
 
-class Keyword(models.Model):
-    key_choices = [
-        ("INFRA", "Infrastructure"),
-        ("ROOM", "Room Condition"),
-        ("SAFETY", "Safety"),
-        ("TRANSPORT", "Transportation"),
-    ]
-    key_type = models.CharField(max_length=10, choices=key_choices)
-    description = models.CharField(max_length=50)  # 방이 예뻐용
-
-    icon_url = models.URLField()
-
-    def __str__(self) -> str:
-        return self.key_type + " / " + self.description
-
-
 class ReviewImage(models.Model):
     review = models.OneToOneField(
         "review",
@@ -129,3 +113,19 @@ class ReviewImage(models.Model):
     def get_cloudfront_url(self):
         cloudfront_domain = "https://" + settings.AWS_S3_CUSTOM_DOMAIN
         return f"{cloudfront_domain}/{self.file.name}"
+
+
+class Keyword(models.Model):
+    key_choices = [
+        ("INFRA", "Infrastructure"),
+        ("ROOM", "Room Condition"),
+        ("SAFETY", "Safety"),
+        ("TRANSPORT", "Transportation"),
+    ]
+    key_type = models.CharField(max_length=10, choices=key_choices)
+    description = models.CharField(max_length=50)  # 방이 예뻐용
+
+    icon_url = models.URLField()
+
+    def __str__(self) -> str:
+        return self.key_type + " / " + self.description

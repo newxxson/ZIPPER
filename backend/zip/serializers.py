@@ -76,6 +76,8 @@ class HouseSerializerSimple(serializers.ModelSerializer):
 
     def get_rat_avg(self, house):
         reviews = house.reviews.all()
+        if review.count() == 0:
+            return "저는 삭제되어야합니다."
         total = 0
         for review in reviews:
             total += review.rating_overall
