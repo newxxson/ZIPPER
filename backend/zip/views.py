@@ -19,7 +19,7 @@ from .permissions import IsWriterOrAdmin, IsReadOnlyOrAdmin
 from rest_framework.decorators import api_view, permission_classes
 import json
 from backend.settings import NAVER_ID, NAVER_SECRET
-from .utils import slice_and_get_coordinates, check_query
+from .utils import slice_and_get_coordinates, check_query, calculate_suggest
 from django.core.mail import EmailMessage, get_connection, send_mail
 from rest_framework.views import APIView
 from django.views.decorators.csrf import csrf_exempt
@@ -166,8 +166,8 @@ class ReviewView(viewsets.ModelViewSet):
             print(type(data_dict))
 
         address = data_dict.pop("address")
-        address, lat, lng = slice_and_get_coordinates(address)
         house_queryset = House.objects.filter(address=address)
+        suggest = data_dict.get("suggest")
         try:
             if house_queryset.exists():
                 house_instance = house_queryset.first()
@@ -177,20 +177,8 @@ class ReviewView(viewsets.ModelViewSet):
                         {"message": "the user has already written the Review"},
                         status=status.HTTP_409_CONFLICT,
                     )
-
                 # house 정보 수정
-                suggest_ratio = house_instance.suggest_ratio
-                review_num = house_instance.review_num
-                if data_dict.get("suggest") == 1:
-                    print("suggesting")
-                    house_instance.suggest_ratio = "%.2f" % (
-                        (review_num * suggest_ratio + 1) / (review_num + 1)
-                    )
-                else:
-                    print("nosuggest")
-                    house_instance.suggest_ratio = "%.2f" % (
-                        (review_num * suggest_ratio) / (review_num + 1)
-                    )
+                calculate_suggest(house_instance, suggest, "add")
                 house_instance.review_num += 1
                 house_instance.save()
             else:
@@ -199,6 +187,7 @@ class ReviewView(viewsets.ModelViewSet):
                 else:
                     suggest_ratio = 0
                 area = Area.objects.get(area_code=data_dict.get("area"))
+                address, lat, lng = slice_and_get_coordinates(address)
                 house_instance = House.objects.create(
                     area=area,
                     address=address,
@@ -247,16 +236,40 @@ class ReviewView(viewsets.ModelViewSet):
         print(data)
         instance = self.get_object()
         house = instance.house
-        suggest = data.get("suggest")
-        if suggest == 1 and instance.suggest == 0:
-            house.suggest_ratio = "%.2f" % (
-                (house.suggest_ratio * house.review_num + 1) / house.review_num
-            )
-        elif suggest == 0 and instance.suggest == 1:
-            house.suggest_ratio = "%.2f" % (
-                (house.suggest_ratio * house.review_num - 1) / house.review_num
-            )
-        house.save()
+        address = request.data.get("address")
+
+        # changed address
+        if house.address != address:
+            calculate_suggest(house, instance.suggest, "delete")
+            house.review_num -= 1
+            house.save()
+            if house.review_num == 0:
+                house.delete()
+
+            new_house = House.objects.filter(address=address)
+            if new_house.exists():
+                instance.house = new_house
+                calculate_suggest(new_house, data.get("suggest"), "add")
+                new_house.review_num += 1
+                new_house.save()
+            else:
+                area = Area.objects.get(area_code=data.get("area"))
+                name = data.get("name", None)
+                address, lat, lng = slice_and_get_coordinates(address)
+                suggest_ratio = 1 if data.get("suggest") else 0
+                house_instance = House.objects.create(
+                    area=area,
+                    address=address,
+                    lat=lat,
+                    lng=lng,
+                    name=name,
+                    suggest_ratio=suggest_ratio,
+                )
+                instance.house = house_instance
+        else:  # same address
+            suggest = data.get("suggest")
+            calculate_suggest(house, suggest, "change", instance.suggest)
+            house.save()
         data.pop("area")
         data.pop("address")
         data.pop("name")

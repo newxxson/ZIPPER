@@ -60,3 +60,37 @@ def get_upload_to(instance, filename):
     new_filename = f"{house_name}_{username}_{time}.{extension}"
 
     return os.path.join("images", house_name, username, new_filename)
+
+
+def calculate_suggest(house, suggest, method, original_suggest=None):
+    if method == "delete":
+        if suggest:
+            house.suggest_ratio = (
+                "%.2f"
+                % ((house.suggest_ratio * house.review_num - 1))
+                / (house.review_num - 1)
+            )
+        else:
+            house.suggest_ratio = "%.2f" % (
+                (house.suggest_ratio * house.review_num) / (house.review_num - 1)
+            )
+    elif method == "add":
+        if suggest:
+            print("suggesting")
+            house.suggest_ratio = "%.2f" % (
+                (house.review_num * house.suggest_ratio + 1) / (house.review_num + 1)
+            )
+        else:
+            print("nosuggest")
+            house.suggest_ratio = "%.2f" % (
+                (house.review_num * house.suggest_ratio) / (house.review_num + 1)
+            )
+    elif method == "change":
+        if original_suggest == 1 and suggest == 0:
+            house.suggest_ratio = "%.2f" % (
+                (house.suggest_ratio * house.review_num - 1) / house.review_num
+            )
+        elif original_suggest == 0 and suggest == 1:
+            house.suggest_ratio = "%.2f" % (
+                (house.suggest_ratio * house.review_num + 1) / house.review_num
+            )
