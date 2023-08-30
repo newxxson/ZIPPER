@@ -40,9 +40,9 @@ class UserConfigView(APIView):
         User = get_user_model()
         data = request.data
         extra_fields = {
-            "age": data.get("age"),
+            "student_number": data.get("student_number"),
             "sex": data.get("sex"),
-            "department": data.get("major"),
+            "department": data.get("department"),
             "interested_areas": data.get("interested_areas"),
         }
         try:

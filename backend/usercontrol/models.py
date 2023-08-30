@@ -44,7 +44,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
 
-    age = models.PositiveIntegerField(null=True)
+    student_number = models.PositiveIntegerField(null=True)
 
     sex_choices = [("M", "Male"), ("F", "Female"), ("NM", "Not to mention")]
     sex = models.CharField(
