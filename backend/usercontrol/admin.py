@@ -15,5 +15,7 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 class VerificationTokenAdmin(admin.ModelAdmin):
     model = VerificationToken
-    ordering = "email"
-    list_display = ("email", "token", "verification_type" "used")
+    ordering = ("email",)
+    list_display = ("email", "token", "verification_type", "used")
+admin.site.register(VerificationToken, VerificationTokenAdmin)
+ 

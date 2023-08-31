@@ -33,7 +33,7 @@ class EmailVerificationTest(TestCase):
         self.assertEqual(response.data, {"message": "activation email sent"})
 
     def test_verify_email_with_new_email_and_time_not_ok(self):
-        url = reverse("your_url_name", kwargs={"email": self.new_email})
+        url = reverse("verify_email", kwargs={"email": self.new_email})
 
         with self.subTest("Test time interval"):
             self.assertFalse(
