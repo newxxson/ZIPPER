@@ -86,7 +86,7 @@ class VerificationToken(models.Model):
     email = models.EmailField(unique=True)
     token = models.CharField(max_length=127, unique=True)
     type_options = [("EMAIL", "EMAIL"), ("PASSWORD", "PASSWORD")]
-    veryfication_type = models.CharField(max_length=10)
+    verification_type = models.CharField(max_length=10)
     timestamp = models.IntegerField()
     used = models.IntegerField(default=1)
 

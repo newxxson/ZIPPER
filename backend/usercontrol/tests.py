@@ -12,7 +12,7 @@ from django.contrib.auth import get_user_model
 
 
 class EmailVerificationTest(TestCase):
-    def setUp(self)
+    def setUp(self):
         self.new_email = "newxxson@korea.ac.kr"
         self.existing_email = "test@korea.ac.kr"
 
