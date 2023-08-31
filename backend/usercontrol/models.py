@@ -78,6 +78,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self) -> str:
         return self.nickname
 
+    def get_short_name(self):
+        return self.nickname
+
 
 class VerificationToken(models.Model):
     user = models.OneToOneField(

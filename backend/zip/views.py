@@ -225,7 +225,7 @@ class ReviewView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            logging.debug(e)
+            logging.debug(e, exc_info=True)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):

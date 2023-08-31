@@ -18,21 +18,16 @@ from rest_framework.authtoken.models import Token
 from rest_auth.views import LoginView
 import json
 from .serializers import CustomUserPatchSerializer, CustomLoginSerializer
-from django.contrib.sites.shortcuts import get_current_site
-from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode
 from .tokens import verification_token_generator
 from django.core.mail import EmailMessage
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_text
 from .utils import (
     check_user_email,
     send_activation_email,
     send_password_reset_email,
     is_time_interval_ok,
 )
-from django.conf import settings
-from django.utils import timezone
-import datetime
 
 
 class UserConfigView(APIView):
