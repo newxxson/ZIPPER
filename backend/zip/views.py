@@ -212,7 +212,7 @@ class ReviewView(viewsets.ModelViewSet):
 
             image_data = request.FILES.get("image_data", None)
             if image_data:
-                ReviewImage.objects.create(reveiw=review_instance, image=image_data)
+                ReviewImage.objects.create(review=review_instance, image=image_data)
 
             review_instance.save()
             print("review created")

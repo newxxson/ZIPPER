@@ -245,8 +245,8 @@ def reset_password(request):
 
 @api_view(["GET"])
 def verify_id(request, id):
-    user = get_user_model()
-    if user.objects.filter(id=id).exists():
+    User = get_user_model()
+    if User.objects.filter(id=id).exists():
         return Response({"valid": False}, status=status.HTTP_409_CONFLICT)
     else:
         return Response({"valid": True}, status=status.HTTP_200_OK)
@@ -254,8 +254,17 @@ def verify_id(request, id):
 
 @api_view(["GET"])
 def verify_nickname(request, nickname):
-    user = get_user_model()
-    if user.objects.filter(nickname=nickname).exists():
+    User = get_user_model()
+    if User.objects.filter(nickname=nickname).exists():
+        return Response({"valid": False}, status=status.HTTP_409_CONFLICT)
+    else:
+        return Response({"valid": True}, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
+def verify_email(request, email):
+    User = get_user_model()
+    if User.objects.filter(email=email).exists():
         return Response({"valid": False}, status=status.HTTP_409_CONFLICT)
     else:
         return Response({"valid": True}, status=status.HTTP_200_OK)
