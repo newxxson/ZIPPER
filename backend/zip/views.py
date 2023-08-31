@@ -18,11 +18,13 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsWriterOrAdmin, IsReadOnlyOrAdmin
 from rest_framework.decorators import api_view, permission_classes
 import json
-from backend.settings import NAVER_ID, NAVER_SECRET
 from .utils import slice_and_get_coordinates, check_query, calculate_suggest
-from django.core.mail import EmailMessage, get_connection, send_mail
 from rest_framework.views import APIView
-from django.views.decorators.csrf import csrf_exempt
+import logging
+import os
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 
@@ -161,9 +163,9 @@ class ReviewView(viewsets.ModelViewSet):
         try:
             data_dict = request.data.get("json_data")
             data_dict = json.loads(data_dict)
+            logging.debug("the file is FormData Format")
         except:
             data_dict = request.data
-            print(type(data_dict))
 
         address = data_dict.pop("address")
         house_queryset = House.objects.filter(address=address)
@@ -196,26 +198,26 @@ class ReviewView(viewsets.ModelViewSet):
                     name=data_dict.get("name"),
                     suggest_ratio=suggest_ratio,
                 )
-                print("house_created")
+                logging.debug("house created")
 
             # review 형식에 맞게 수정
             data_dict.pop("area")
             data_dict.pop("name")
             key_pk = data_dict.pop("keywords")
-            print(key_pk)
             keywords = Keyword.objects.filter(pk__in=key_pk)
 
             review_instance = Review.objects.create(
                 user=request.user, house=house_instance, **data_dict
             )
             review_instance.keywords.set(keywords)
-
+            logging.debug("revew created")
             image_data = request.FILES.get("image_data", None)
             if image_data:
+                logging.debug("image_data was located")
                 ReviewImage.objects.create(review=review_instance, image=image_data)
-
+            else:
+                logging.debug("no image located")
             review_instance.save()
-            print("review created")
             serializer = self.get_serializer(
                 review_instance, context={"user": request.user}
             )
@@ -223,7 +225,7 @@ class ReviewView(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print(e)
+            logging.debug(e)
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
