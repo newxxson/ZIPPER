@@ -37,7 +37,7 @@ class Area(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         related_name="reviews",
     )

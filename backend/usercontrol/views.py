@@ -27,7 +27,12 @@ from .utils import (
     send_activation_email,
     send_password_reset_email,
     is_time_interval_ok,
+    verify_hash,
+    verify_email_code,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class UserConfigView(APIView):
@@ -41,7 +46,8 @@ class UserConfigView(APIView):
             "interested_areas": data.get("interested_areas"),
         }
         try:
-            if not check_user_email(data.get("email")):
+            token = data.pop("token", None)
+            if not check_user_email(data.get("email"), token):
                 return Response(
                     {"message": "invalid email"}, status=status.HTTP_400_BAD_REQUEST
                 )
@@ -53,20 +59,19 @@ class UserConfigView(APIView):
                 password=data.get("password"),
                 **extra_fields,
             )
-
+            logging.debug("created_user")
             token = Token.objects.create(user=user)
-
-            send_activation_email(user)
 
             return Response(
                 {
-                    "message": "confirmation email was sent to your email account",
+                    "message": "signup complete!",
                     "token": token,
                 },
                 status=status.HTTP_201_CREATED,
             )
 
         except Exception as e:
+            logging.debug(e, exc_info=True)
             return Response({"message": str(e)}, status=400)
 
     @permission_classes([IsAuthenticated])
@@ -86,75 +91,40 @@ class UserConfigView(APIView):
         user.delete()
 
 
-@api_view(["GET"])
-def send_activation_email(request):
-    user = request.user
-    if user.is_active:
+@api_view(["POST"])
+def send_activation_email_again(request):
+    email = request.data.get("email")
+    if is_time_interval_ok(email):
+        send_activation_email(email)
         return Response(
-            {"message": "Already activated"}, status=status.HTTP_400_BAD_REQUEST
+            {"message": "activation email sent"},
+            status=status.HTTP_200_OK,
         )
-    if not is_time_interval_ok(user):
+    else:
         return Response(
             {"message": "you need to wait to send another mail"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    send_activation_email(user)
 
-    return Response(
-        {"message": "confirmation email was sent to your email account"},
-        status=status.HTTP_200_OK,
-    )
-
-
-@api_view(["GET"])
-def activate_user(request, uidb64, token):
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        User = get_user_model()
-        user = User.objects.get(id=uid)
-        if user.is_active:
-            return Response(
-                {"message": "already confirmed"}, status=status.HTTP_400_BAD_REQUEST
-            )
-    except Exception as e:
-        user = None
+@api_view(["POST"])
+def activate_user(request):
+    data = request.data
+    email = data.get("email")
+    token = data.get("token")
+    if verify_email_code(email, token):
         return Response(
-            {"message": str(e)},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-    try:
-        activation_token = VerificationToken.objects.get(user=user)
-    except:
-        return Response(
-            {"message": "No token was issued"}, status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    if (
-        verification_token_generator.check_token(user, token)
-        and activation_token.token == token
-        and activation_token.verification_type == "EMAIL"
-    ):
-        user.is_active = True
-        activation_token.delete()
-        user.save()
-        token = Token.objects.get(user=user)
-        return Response(
-            {"message": "confirmation complete", "token": token},
-            status=status.HTTP_202_ACCEPTED,
+            {"message": "email verified", "token": token}, status=status.HTTP_200_OK
         )
     else:
         return Response(
-            {
-                "message": "Invalid token. The token may have been expired. Check your email inbox."
-            },
-            status=status.HTTP_401_UNAUTHORIZED,
+            {"message": "invalid or expired token"}, status=status.HTTP_400_BAD_REQUEST
         )
 
 
 # 초기화 요청이 들어오고 이메일로 전송
 @api_view(["POST"])
-def password_reset_email(request):
+def password_reset_email(request, id):
     try:
         email = request.data.get("email")
         User = get_user_model()
@@ -261,8 +231,14 @@ def verify_email(request, email):
     User = get_user_model()
     if User.objects.filter(email=email).exists():
         return Response({"valid": False}, status=status.HTTP_409_CONFLICT)
+    if is_time_interval_ok(email):
+        send_activation_email(email)
+        return Response({"message": "activation email sent"}, status=status.HTTP_200_OK)
     else:
-        return Response({"valid": True}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "you need to wait to send another mail"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class UserInterestView(APIView):

@@ -21,8 +21,6 @@ import json
 from .utils import slice_and_get_coordinates, check_query, calculate_suggest
 from rest_framework.views import APIView
 import logging
-import os
-from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
