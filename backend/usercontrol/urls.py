@@ -20,7 +20,7 @@ urlpatterns = [
     path("user-config/", UserConfigView.as_view(), name="user-config"),
     path("verify-id/<str:id>/", verify_id, name="verify_id"),
     path("verify-nickname/<str:nickname>/", verify_nickname, name="verify_nickname"),
-    path("verify_email/<str:email>/", verify_email, name="verify_email"),
+    path("verify-email/<str:email>/", verify_email, name="verify_email"),
     path("activate/", activate_user, name="activate"),
     path(
         "send-activation-email/",

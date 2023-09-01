@@ -65,7 +65,7 @@ class UserConfigView(APIView):
             return Response(
                 {
                     "message": "signup complete!",
-                    "token": token,
+                    "token": token.token,
                 },
                 status=status.HTTP_201_CREATED,
             )
@@ -91,20 +91,20 @@ class UserConfigView(APIView):
         user.delete()
 
 
-@api_view(["POST"])
-def send_activation_email_again(request):
-    email = request.data.get("email")
-    if is_time_interval_ok(email):
-        send_activation_email(email)
-        return Response(
-            {"message": "activation email sent"},
-            status=status.HTTP_200_OK,
-        )
-    else:
-        return Response(
-            {"message": "you need to wait to send another mail"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+# @api_view(["POST"])
+# def send_activation_email_again(request):
+#     email = request.data.get("email")
+#     if is_time_interval_ok(email):
+#         send_activation_email(email)
+#         return Response(
+#             {"message": "activation email sent"},
+#             status=status.HTTP_200_OK,
+#         )
+#     else:
+#         return Response(
+#             {"message": "you need to wait to send another mail"},
+#             status=status.HTTP_400_BAD_REQUEST,
+#         )
 
 
 @api_view(["POST"])

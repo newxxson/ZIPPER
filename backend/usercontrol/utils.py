@@ -50,6 +50,7 @@ def create_token(email, veri_type):
         elif veri_type == "PASSWORD":
             verification_token.token, verification_token.timestamp = create_hash(email)
         verification_token.used += 1
+        verification_token.save()
     else:
         if veri_type == "EMAIL":
             token = random.randint(100000, 999999)
