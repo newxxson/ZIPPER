@@ -65,7 +65,7 @@ class UserConfigView(APIView):
             return Response(
                 {
                     "message": "signup complete!",
-                    "token": token.token,
+                    "token": token.key,
                 },
                 status=status.HTTP_201_CREATED,
             )
