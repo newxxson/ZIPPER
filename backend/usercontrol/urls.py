@@ -6,7 +6,7 @@ from .views import (
     verify_id,
     verify_nickname,
     activate_user,
-    send_activation_email_again,
+    # send_activation_email_again,
     password_reset_email,
     verify_reset_email,
     reset_password,
@@ -22,11 +22,6 @@ urlpatterns = [
     path("verify-nickname/<str:nickname>/", verify_nickname, name="verify_nickname"),
     path("verify-email/<str:email>/", verify_email, name="verify_email"),
     path("activate/", activate_user, name="activate"),
-    path(
-        "send-activation-email/",
-        send_activation_email_again,
-        name="send_activation_email",
-    ),
     path("send-reset-email", password_reset_email, name="send_reset_email"),
     path(
         "verify-reset-email/<str:uidb64>/<str:token>",
